@@ -1,0 +1,70 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-documents', {
+        category: 'starintel',
+        color: '#e67e22',
+        defaults: {
+            name: { value: '' },
+            server: { type: 'starintel-server', required: true },
+            op: { value: 'ingest' },
+            documentId: { value: '' },
+            q: { value: '' },
+            path: { value: '' },
+            params: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'file.svg',
+        label: function () {
+            return this.name || 'starintel ' + (this.op || 'documents');
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-documents">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="ingest">ingest (POST /api/v1/documents)</option>
+            <option value="bulk">bulk (POST /api/v1/documents/bulk)</option>
+            <option value="get">get (GET /api/v1/documents/:id)</option>
+            <option value="update">update (PUT /api/v1/documents/:id)</option>
+            <option value="delete">delete (DELETE /api/v1/documents/:id)</option>
+            <option value="search">search (GET /api/v1/documents/search)</option>
+            <option value="query">query (GET arbitrary path)</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-row-documentId">
+        <label for="node-input-documentId"><i class="fa fa-hashtag"></i> Document id</label>
+        <input type="text" id="node-input-documentId" placeholder="empty = msg.id or msg.topic">
+    </div>
+    <div class="form-row" id="node-row-q">
+        <label for="node-input-q"><i class="fa fa-search"></i> Search q</label>
+        <input type="text" id="node-input-q" placeholder="empty = msg.q or msg.payload">
+    </div>
+    <div class="form-row" id="node-row-path">
+        <label for="node-input-path"><i class="fa fa-route"></i> Query path</label>
+        <input type="text" id="node-input-path" placeholder="/documents/users/by-name/foo">
+    </div>
+    <div class="form-row">
+        <label for="node-input-params"><i class="fa fa-list"></i> Params (JSON)</label>
+        <input type="text" id="node-input-params" placeholder='{"limit": 10}'>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="starintel-documents">
+    <p>StarIntel document operations against the versioned server API.</p>
+    <p>ingest/bulk send <code>msg.payload</code> as the JSON body. get/update/delete
+       use the configured id or <code>msg.id</code>/<code>msg.topic</code>. search uses the
+       configured q or <code>msg.q</code>/<code>msg.payload</code> with params
+       (limit, dataset, tenant, bookmark, sort). query performs a GET on an
+       arbitrary legacy path such as <code>/documents/emails/by-domain/example.com</code>.</p>
+    <p>The server is LAN-only and unauthenticated; do not expose it beyond the operator network.</p>
+</script>

@@ -1,0 +1,4 @@
+* Run identity
+- Consumed issue :: #2
+- Branch :: =rage/2-initial-nodes=
+- RAGE start commit :: =a80aaa6a27f0ecdb1521b2db96892f153326bc0d=

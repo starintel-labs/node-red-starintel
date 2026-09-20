@@ -1,0 +1,136 @@
+:PROPERTIES:
+:ID: nodered-starintel-palettes-0001-design
+:END:
+#+title: Node-RED StarIntel palettes: initial design
+#+date: 2026-09-20
+#+filetags: :starintel:nodered:rlm:hackmode:adadr:
+
+* Mode
+
+Auto-RAGE, selected explicitly by the operator command =/auto-rage= on
+2026-09-20. This file is the recorded worker software-design decision required
+by ADADR before implementation.
+
+* A — Analyze
+
+Verified facts from live repository inspection (2026-09-20):
+
+- =prolog-rlm= (github.com/lost-rob0t/prolog-rlm, main @ eba3f90) is a
+  domain-neutral SWI-Prolog RLM/agent runtime. Explicitly *not* a StarIntel
+  component. Integration surface is the CLI:
+  =swipl -q -s bin/prolog-rlm.pl -- rlm|direct ... --json= with provider
+  options (=--endpoint=, =--credential-env=, =--model=) and budgets
+  (=--max-tokens=, =--max-cost=, =--time-limit=, =--context-bytes=).
+  =demo --json= runs with no credentials.
+- =starintel-server= (Common Lisp) exposes an unauthenticated LAN-only HTTP
+  API: =/api/v1/documents=, =/api/v1/documents/bulk=,
+  =/api/v1/documents/search= and =/documents/<dtype>/by-<field>= queries.
+  Actor traffic rides RabbitMQ; actors advertise themselves by ingesting
+  StarIntel =actor-manifest= v0.9 documents
+  (=extensions.starintel.actor_manifest.v1= carries the rich runtime contract).
+- StarIntel schema lock (read directly per policy; the spec-version skill is
+  not installed in this runtime): base =schema_version= 0.9.0, active
+  =release_version= 0.9.1, canonical repository
+  =lost-rob0t/starintel-gpt-auto-dig= @ =6479c0a9dc88ce9fed183515fc4df5d245de0b3a=.
+- =hackmode= is a Common Lisp exploit metaframework; the local checkout has a
+  broken submodule state, so its package API is unconfirmed (tracked as a
+  follow-up in node-red-hackmode#1).
+- Node-RED 4.1.2 is in nixpkgs. Node-RED nodes are plain npm packages keyed by
+  the ="node-red"= field in package.json.
+
+Inference (labelled): config-node *types* are global across installed
+packages, so a node in node-red-starintel may reference the
+=prolog-rlm-runtime= config type owned by node-red-prolog-rlm without a hard
+npm dependency; absence degrades to a configuration error.
+
+* D — Design
+
+Three public repositories under =starintel-labs=, developed in
+=~/Documents/Projects=, MIT licensed, each with a zero-runtime-dependency
+Node-RED palette, deterministic =node --test= suite, offline-safe nix flake,
+and GitHub Actions CI.
+
+** node-red-prolog-rlm
+
+- =rlm-runtime= (config): swipl path, prolog-rlm checkout path, model,
+  endpoint URL, credential *env var name*, budget fields. Never stores secret
+  values.
+- =rlm= (io): query from node config or msg.payload; context from node
+  config or msg.context/msg.payload; spawns the CLI via =execFile= (argv
+  array, no shell), credential injected as env only; parses the trace-envelope
+  JSON onto msg.payload; non-zero exit -> node error with truncated stderr.
+- =rlm-direct= (io): direct completion variant.
+
+** node-red-starintel
+
+- =starintel-server= (config): base URL, request timeout; help text states
+  LAN-only/no-auth.
+- =starintel-documents= (io): operations ingest, bulk, search, query
+  (arbitrary =/documents/<dtype>/by-<field>= path + params) via =fetch= with
+  =AbortController=; typed error statuses.
+- =starintel-actors= (io): =manifests= operation lists actor-manifest
+  documents across the dataset (dtype-filtered document query); =publish=
+  operation ingests an actor-manifest v0.9 document restricted to strict
+  =data= fields (actor, name, manifest_type, generated_at, target_options,
+  consumer_path) + schema_versions.
+- =starintel-rlm= (io): the agentic bridge. Inputs: an =rlm-runtime= config
+  (cross-package type) + a =starintel-server= config. On input: fetch dataset
+  context (documents query), run the RLM loop with that context, emit result;
+  optionally ingest an actor-manifest advertising this node as an agentic
+  actor. Local spawn helper duplicated so runtime does not require the other
+  package at require-time.
+
+** node-red-hackmode
+
+- =hackmode-runtime= (config): lisp binary, hackmode checkout.
+- =hackmode= (io): evaluates a configured form/module string in a fresh
+  subprocess (=execFile=), stdout onto msg.payload, non-zero exit -> node
+  error. POC contract; structured results deferred until hackmode-core API is
+  confirmed (follow-up issue).
+
+** Nix / dotfiles
+
+- Per-repo =flake.nex= -> flake.nix: devShell (nodejs), checks that run
+  =node --test= offline (zero deps makes this sound), packages.palette
+  copying the palette for userDir installation.
+- Dotfiles (separate repository): custom home-manager module
+  =programs.node-red= (enable, package, userDir, settings file), exported as
+  a flake homeManagerModule and enabled on host =logos= per operator answer.
+
+* Adversarial review
+
+- Shell injection via query/context -> =execFile= with argv array only; no
+  interpolated shell strings anywhere.
+- Secret leakage -> credentials only as environment variables referenced by
+  *name*; argv never contains secrets (it is visible in =/proc=); stderr is
+  truncated on error surfaces and never echoed into node logs verbatim.
+- Unbounded subprocess -> =--time-limit= mapped to both a CLI budget and a
+  hard JS timer that kills the child; kill propagates SIGKILL after grace.
+- Broken JSON on stdout (mixed with logs) -> parse failure is a typed node
+  error carrying exit code + truncated stderr, not a crash.
+- starintel-server has no auth -> help text and README both state LAN-only;
+  no credentials are stored by the config node.
+- Missing cross-package config (node-red-prolog-rlm uninstalled) ->
+  starintel-rlm reports a configuration error status and refuses to run.
+- hangmode/hackmode unconfirmed API -> subprocess contract kept string-in /
+  stdout-out; follow-up issue records the confirmation work.
+- Non-deterministic tests -> fake swipl/lisp fixtures are shell scripts with
+  fixed outputs; no network, no sleeps-as-sync (promise/event completion).
+
+* Decision (Auto-RAGE)
+
+Proceed with the three-repo design above for issue #2 in each repository.
+Rejected alternatives: single monorepo palette (loses the operator-confirmed
+repo split and couples hackmode to starintel); embedding prolog-rlm via
+pengines/HTTP server now (prolog-rlm exposes no stable server contract; the
+CLI is its documented public surface); npm dependency between starintel and
+prolog-rlm packages (neither is published; cross-package config-node type
+reference is the Node-RED-native composition).
+
+* Verification gates
+
+- Per repo: =node --test= green (deterministic, offline).
+- Per repo: =nix flake check= green offline.
+- CI: node 20/22 matrix test lane + nix flake check lane on the exact PR head.
+- Dotfiles: =nix flake check= (or eval) for the logos home config after
+  adding the module.
