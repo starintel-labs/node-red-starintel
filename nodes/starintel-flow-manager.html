@@ -1,0 +1,59 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-flow-manager', {
+        category: 'starintel',
+        color: '#8e44ad',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "op": {
+                "value": "get-flows"
+        },
+        "baseUrl": {
+                "value": "http://127.0.0.1:1880"
+        },
+        "authEnv": {
+                "value": ""
+        },
+        "timeoutMs": {
+                "value": 8000
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'cog.svg',
+        label: function () {
+            return this.name || 'flow manager';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-flow-manager">
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="get-flows">get flows</option>
+            <option value="put-flows">put flows (deploy)</option>
+            <option value="get-nodes">list installed nodes</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-baseUrl"><i class="fa fa-cog"></i> Admin base URL</label>
+        <input type="text" id="node-input-baseUrl" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-authEnv"><i class="fa fa-cog"></i> Auth env var</label>
+        <input type="text" id="node-input-authEnv" placeholder="NODE_RED_ADMIN_TOKEN">
+        <div class="form-tips">Optional. Name of an env var holding the Authorization header value (e.g. Bearer token). The value is never stored in flows.</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-timeoutMs"><i class="fa fa-cog"></i> Timeout (ms)</label>
+        <input type="number" id="node-input-timeoutMs" placeholder="">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-flow-manager">
+<p>Node-RED admin API client so flows — and agents driving them — can fully reconfigure this instance. put-flows deploys msg.payload (flow array) with rev handling.</p>
+</script>

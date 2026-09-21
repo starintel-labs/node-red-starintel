@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('message2org', {
+        category: 'starintel',
+        color: '#7f8c8d',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "headingLevel": {
+                "value": 2
+        },
+        "drawer": {
+                "value": true
+        },
+        "timestamps": {
+                "value": "org"
+        },
+        "tags": {
+                "value": "dtype"
+        },
+        "quoteLevel": {
+                "value": 0
+        },
+        "separator": {
+                "value": "\\n\\n"
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'file-text.svg',
+        label: function () {
+            return this.name || 'message2org';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="message2org">
+    <div class="form-row">
+        <label for="node-input-headingLevel"><i class="fa fa-cog"></i> Heading level</label>
+        <input type="number" id="node-input-headingLevel" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-drawer"><i class="fa fa-cog"></i> Properties drawer</label>
+        <input type="checkbox" id="node-input-drawer" placeholder="" style="width: auto">
+    </div>
+    <div class="form-row">
+        <label for="node-input-timestamps"><i class="fa fa-cog"></i> Timestamps</label>
+        <select id="node-input-timestamps">
+            <option value="org">org timestamp on heading</option>
+            <option value="raw">raw ISO in drawer</option>
+            <option value="none">none</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-tags"><i class="fa fa-cog"></i> Tags</label>
+        <select id="node-input-tags">
+            <option value="dtype">dtype only</option>
+            <option value="full">dtype + channel + doc tags</option>
+            <option value="none">none</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-quoteLevel"><i class="fa fa-cog"></i> Body quote spaces</label>
+        <input type="number" id="node-input-quoteLevel" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-separator"><i class="fa fa-cog"></i> Separator</label>
+        <input type="text" id="node-input-separator" placeholder="">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="message2org">
+<p>Renders message-family documents (message, email-message, socialmpost, post) as an Org outline: heading from author/channel, optional properties drawer (ID/DTYPE/SCHEMA_VERSION/DATE), tags, quoted body. Works on single docs, arrays, or {docs} envelopes.</p>
+</script>

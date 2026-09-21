@@ -1,0 +1,59 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-pro-actors', {
+        category: 'starintel',
+        color: '#d35400',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "op": {
+                "value": "list"
+        },
+        "actor": {
+                "value": ""
+        },
+        "emit": {
+                "value": false
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'file.svg',
+        label: function () {
+            return this.name || 'pro-actors';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-pro-actors">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="list">list catalog (17 actors)</option>
+            <option value="options">actor options + target_options</option>
+            <option value="manifest">build/emit actor-manifest</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-actor"><i class="fa fa-cog"></i> Actor</label>
+        <input type="text" id="node-input-actor" placeholder="empty = msg.actor">
+    </div>
+    <div class="form-row">
+        <label for="node-input-emit"><i class="fa fa-cog"></i> Emit manifest</label>
+        <input type="checkbox" id="node-input-emit" placeholder="" style="width: auto">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-pro-actors">
+<p>Built-in catalog generated from starintel-pro-actors manifests.py. <b>list</b> emits the full catalog; <b>options</b> emits one actor's operations/dtypes/target_options/config schema; <b>manifest</b> builds (and optionally ingests) its actor-manifest v0.9 document.</p>
+</script>

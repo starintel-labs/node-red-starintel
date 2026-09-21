@@ -15,6 +15,16 @@ function startFixtureServer() {
       requests.push(record);
       res.setHeader('content-type', 'application/json');
       const path = req.url.split('?')[0];
+      if (path === '/flows' && req.method === 'GET') {
+        res.writeHead(200);
+        res.end(JSON.stringify({ rev: 'x1', flows: [{ id: 't0', type: 'tab', label: 'base' }] }));
+        return;
+      }
+      if (path === '/flows' && req.method === 'POST') {
+        res.writeHead(200);
+        res.end(JSON.stringify({ rev: 'x2' }));
+        return;
+      }
       if (path === '/slow') {
         setTimeout(() => {
           res.writeHead(200);

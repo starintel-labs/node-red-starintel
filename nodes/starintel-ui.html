@@ -1,0 +1,86 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-ui', {
+        category: 'starintel',
+        color: '#16a085',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "path": {
+                "value": "starintel"
+        },
+        "title": {
+                "value": "StarIntel"
+        },
+        "q": {
+                "value": "*:*"
+        },
+        "limit": {
+                "value": 25
+        },
+        "view": {
+                "value": "table"
+        },
+        "columns": {
+                "value": ""
+        },
+        "refreshSec": {
+                "value": 0
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'ui.svg',
+        label: function () {
+            return this.name || 'starintel ui';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-ui">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-path"><i class="fa fa-cog"></i> Mount path</label>
+        <input type="text" id="node-input-path" placeholder="starintel -> /starintel-ui/starintel">
+    </div>
+    <div class="form-row">
+        <label for="node-input-title"><i class="fa fa-cog"></i> Title</label>
+        <input type="text" id="node-input-title" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-q"><i class="fa fa-cog"></i> Search q</label>
+        <input type="text" id="node-input-q" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-limit"><i class="fa fa-cog"></i> Limit</label>
+        <input type="number" id="node-input-limit" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-view"><i class="fa fa-cog"></i> View</label>
+        <select id="node-input-view">
+            <option value="table">table</option>
+            <option value="cards">cards</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-columns"><i class="fa fa-cog"></i> Columns (CSV)</label>
+        <input type="text" id="node-input-columns" placeholder="data.actor,data.status">
+    </div>
+    <div class="form-row">
+        <label for="node-input-refreshSec"><i class="fa fa-cog"></i> Auto refresh (s)</label>
+        <input type="number" id="node-input-refreshSec" placeholder="">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-ui">
+<p>Serves a live data UI at <code>/starintel-ui/&lt;path&gt;</code> backed by a dataset search: table or cards, optional columns and auto-refresh. Each instance is one page; agents can deploy new pages via the flow-manager node.</p>
+</script>

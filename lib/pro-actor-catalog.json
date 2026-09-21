@@ -1,0 +1,1063 @@
+{
+ "background-report": {
+  "actor_id": "background-report",
+  "actor_type": "analysis-pipeline",
+  "authorization": {
+   "credentials": "optional per-source token via token-env profile",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "immutable-dataset-mirrors",
+   "public-record-queries",
+   "entity-resolution",
+   "evidence-backed-reports"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "STARINTEL_BACKGROUND_DEFAULT_TIMEOUT_SECONDS": {
+     "exclusiveMinimum": 0,
+     "type": "number"
+    },
+    "STARINTEL_BACKGROUND_MIRROR_ROOT": {
+     "type": "string"
+    },
+    "STARINTEL_BACKGROUND_WORKER_COUNT": {
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "starintel-gserver",
+   "dexador",
+   "jsown"
+  ],
+  "entrypoint": "starintel-pro-actors:start",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "stop intake and stop background workers",
+   "startup": "publish manifest, start bounded query and report actors"
+  },
+  "operations": [
+   "mirror-source",
+   "query-source",
+   "resolve-identities",
+   "build-report"
+  ],
+  "output_dtypes": [
+   "source",
+   "analysis"
+  ],
+  "routing_keys": [
+   "documents.ingest.<dtype>"
+  ],
+  "runtime": "common-lisp-sento-plugin",
+  "target_options": []
+ },
+ "bluesky": {
+  "actor_id": "bluesky",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "backend-dependent",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "public-social-collection",
+   "cursor-pagination",
+   "graph-relations"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "max_pages": {
+     "default": 100,
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "atproto"
+  ],
+  "entrypoint": "starintel_pro_actors.bluesky_actor:BlueskyActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain actor mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "collect-account",
+   "collect-post",
+   "collect-thread",
+   "collect-followers",
+   "collect-following",
+   "search"
+  ],
+  "output_dtypes": [
+   "post",
+   "account",
+   "relation"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "cracked": {
+  "actor_id": "cracked",
+  "actor_type": "crawl-pipeline",
+  "authorization": {
+   "credentials": "optional operator-supplied browser cookie",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "same-origin-crawl",
+   "ioc-extraction",
+   "persistent-frontier",
+   "challenge-pause-resume"
+  ],
+  "configuration_schema": {},
+  "consumer_path": null,
+  "dependencies": [
+   "beautifulsoup4",
+   "httpx",
+   "sqlite3"
+  ],
+  "entrypoint": "starintel_pro_actors.crawler:run_crawl",
+  "input_dtypes": [],
+  "lifecycle": {
+   "checkpoint": "sqlite crawl frontier",
+   "shutdown": "drain bounded queues and persist frontier",
+   "startup": "open persistent frontier and sink"
+  },
+  "operations": [
+   "crawl",
+   "resume"
+  ],
+  "output_dtypes": [],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "crimethinc-podcasts": {
+  "actor_id": "crimethinc-podcasts",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "operator-supplied Whisper backend URL (OPENWHISPER_URL)",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "podcast-catalog-crawl",
+   "audio-artifact-acquisition",
+   "whisper-transcription",
+   "deterministic-transcript-identity"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "OPENWHISPER_URL": {
+     "format": "uri",
+     "type": "string",
+     "writeOnly": true
+    },
+    "artifact_dir": {
+     "type": "string"
+    },
+    "dataset": {
+     "default": "crimethinc-podcasts",
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "httpx",
+   "beautifulsoup4"
+  ],
+  "entrypoint": "starintel_pro_actors.podcast_cli:app",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain acquisition/transcription/publisher mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "ingest"
+  ],
+  "output_dtypes": [
+   "podcast-episode",
+   "podcast-transcript",
+   "web-capture",
+   "target"
+  ],
+  "routing_keys": [
+   "documents.ingest.<dtype>"
+  ],
+  "runtime": "python-pykka-batch-pipeline",
+  "target_options": [
+   {
+    "default": "https://crimethinc.com/podcasts",
+    "key": "index_url",
+    "type": "string"
+   },
+   {
+    "key": "max_episodes",
+    "minimum": 1,
+    "type": "integer"
+   },
+   {
+    "key": "enrichment_actor",
+    "type": "string"
+   }
+  ]
+ },
+ "domain-hunt": {
+  "actor_id": "domain-hunt",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "none",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "certificate-transparency",
+   "crtsh-enumeration",
+   "certstream-scope-matching",
+   "idempotent-domain-documents"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "DOMAIN_HUNT_CRTSH_ENDPOINT": {
+     "format": "uri",
+     "type": "string"
+    },
+    "DOMAIN_HUNT_MAX_BYTES": {
+     "minimum": 1024,
+     "type": "integer"
+    },
+    "DOMAIN_HUNT_MAX_RESULTS": {
+     "minimum": 1,
+     "type": "integer"
+    },
+    "DOMAIN_HUNT_REQUEST_TIMEOUT_SECONDS": {
+     "exclusiveMinimum": 0,
+     "type": "number"
+    },
+    "DOMAIN_HUNT_WORKER_COUNT": {
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "starintel-gserver",
+   "dexador",
+   "jsown",
+   "lparallel"
+  ],
+  "entrypoint": "starintel-pro-actors:start",
+  "input_dtypes": [
+   "target"
+  ],
+  "lifecycle": {
+   "shutdown": "stop intake, clear certstream scopes, and stop bounded workers",
+   "startup": "publish manifest, register Sento actor and legacy aliases, then report ready"
+  },
+  "operations": [
+   "query-crtsh",
+   "register-certstream-scope",
+   "ingest-certstream-event"
+  ],
+  "output_dtypes": [
+   "domain"
+  ],
+  "routing_keys": [
+   "documents.ingest.domain"
+  ],
+  "runtime": "common-lisp-sento-plugin",
+  "target_options": [
+   {
+    "default": "crtsh",
+    "enum": [
+     "crtsh",
+     "certstream",
+     "both"
+    ],
+    "key": "mode",
+    "type": "string"
+   },
+   {
+    "key": "include_regex",
+    "type": "array"
+   },
+   {
+    "key": "exclude_regex",
+    "type": "array"
+   },
+   {
+    "key": "max_results",
+    "maximum": 5000,
+    "minimum": 1,
+    "type": "integer"
+   }
+  ]
+ },
+ "generate-usernames": {
+  "actor_id": "generate-usernames",
+  "actor_type": "enricher",
+  "authorization": {
+   "credentials": "none",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "username-generation",
+   "bounded-candidate-generation"
+  ],
+  "configuration_schema": {},
+  "consumer_path": null,
+  "dependencies": [],
+  "entrypoint": "starintel_pro_actors.generate_usernames:GenerateUsernamesActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain actor mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "generate"
+  ],
+  "output_dtypes": [
+   "username-candidate"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "kiwifarms": {
+  "actor_id": "kiwifarms",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "none",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "xenforo-crawl",
+   "tartarus-proof-of-work",
+   "bounded-crawl",
+   "idempotent-documents"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "KIWIFARMS_BASE_URL": {
+     "format": "uri",
+     "type": "string"
+    },
+    "KIWIFARMS_MAX_CHALLENGE_STEPS": {
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "starintel-gserver",
+   "dexador",
+   "ironclad",
+   "lparallel"
+  ],
+  "entrypoint": "starintel-pro-actors:start",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "stop intake and shut down the lparallel kernel",
+   "startup": "publish manifest, register Sento actor, then report ready"
+  },
+  "operations": [
+   "crawl-page",
+   "crawl-thread"
+  ],
+  "output_dtypes": [
+   "source"
+  ],
+  "routing_keys": [
+   "documents.ingest.<dtype>"
+  ],
+  "runtime": "common-lisp-sento-plugin",
+  "target_options": [
+   {
+    "key": "max_pages",
+    "minimum": 1,
+    "type": "integer"
+   },
+   {
+    "key": "max_depth",
+    "minimum": 0,
+    "type": "integer"
+   },
+   {
+    "default": true,
+    "key": "solve_challenges",
+    "type": "boolean"
+   }
+  ]
+ },
+ "melissa": {
+  "actor_id": "melissa",
+  "actor_type": "enricher",
+  "authorization": {
+   "credentials": "operator-supplied Melissa API key",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "melissa-provider-enrichment",
+   "bounded-lookup-pool",
+   "provider-retryability"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "max_concurrency": {
+     "default": 8,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "retries": {
+     "default": 2,
+     "minimum": 0,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "httpx"
+  ],
+  "entrypoint": "starintel_pro_actors.melissa:MelissaActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "cancel active lookups and drain mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "query",
+   "batch",
+   "cancel"
+  ],
+  "output_dtypes": [
+   "person"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "org-member": {
+  "actor_id": "org-member",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "none",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "theorg-roster-enumeration",
+   "idempotent-documents",
+   "graph-relations"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "THEORG_CLIENT_HEADER": {
+     "default": "web",
+     "type": "string"
+    },
+    "THEORG_GRAPHQL_ENDPOINT": {
+     "format": "uri",
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "starintel-gserver",
+   "dexador",
+   "jsown"
+  ],
+  "entrypoint": "starintel-pro-actors:start",
+  "input_dtypes": [
+   "target",
+   "org"
+  ],
+  "lifecycle": {
+   "shutdown": "stop intake and drain dispatcher work",
+   "startup": "publish manifest, register Sento actor, then report ready"
+  },
+  "operations": [
+   "enumerate-org-members"
+  ],
+  "output_dtypes": [
+   "person",
+   "org",
+   "relation",
+   "source"
+  ],
+  "routing_keys": [
+   "documents.ingest.<dtype>"
+  ],
+  "runtime": "common-lisp-sento-plugin",
+  "target_options": [
+   {
+    "default": false,
+    "key": "no_search",
+    "type": "boolean"
+   },
+   {
+    "default": false,
+    "key": "no_teams",
+    "type": "boolean"
+   },
+   {
+    "default": false,
+    "key": "deep",
+    "type": "boolean"
+   },
+   {
+    "default": false,
+    "key": "json",
+    "type": "boolean"
+   }
+  ]
+ },
+ "reddit": {
+  "actor_id": "reddit",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "none for bundled backends",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "public-web-collection",
+   "archive-collection",
+   "graph-relations"
+  ],
+  "configuration_schema": {},
+  "consumer_path": null,
+  "dependencies": [
+   "httpx"
+  ],
+  "entrypoint": "starintel_pro_actors.reddit_actor:RedditActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain actor mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "collect-post",
+   "collect-user",
+   "collect-subreddit",
+   "search"
+  ],
+  "output_dtypes": [
+   "submission",
+   "comment",
+   "account",
+   "relation"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "telegram": {
+  "actor_id": "telegram",
+  "actor_type": "continuous-collector",
+  "authorization": {
+   "credentials": "authorized Telegram user session; bot accounts rejected",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "continuous-collection",
+   "durable-checkpoints",
+   "transactional-outbox"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "api_hash": {
+     "type": "string",
+     "writeOnly": true
+    },
+    "api_id": {
+     "minimum": 1,
+     "type": "integer",
+     "writeOnly": true
+    },
+    "batch_size": {
+     "default": 100,
+     "maximum": 1000,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "chats": {
+     "maxItems": 1000,
+     "minItems": 1,
+     "type": "array"
+    },
+    "dataset": {
+     "default": "telegram",
+     "type": "string"
+    },
+    "poll_interval": {
+     "default": 5.0,
+     "exclusiveMinimum": 0,
+     "type": "number"
+    },
+    "reconcile_limit": {
+     "default": 100,
+     "maximum": 1000,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "request_timeout": {
+     "default": 60.0,
+     "exclusiveMinimum": 0,
+     "type": "number"
+    },
+    "retry_max": {
+     "default": 300.0,
+     "exclusiveMinimum": 0,
+     "type": "number"
+    },
+    "session_path": {
+     "type": "string",
+     "writeOnly": true
+    },
+    "state_path": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "telethon",
+   "sqlite3"
+  ],
+  "entrypoint": "starintel_pro_actors.telegram_actor:TelegramActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "checkpoint": "sqlite cursor and outbox",
+   "readiness": "collector task running",
+   "shutdown": "cancel timer, finish bounded poll, close backend and state",
+   "startup": "open durable state then connect authorized user session"
+  },
+  "operations": [
+   "collect-history",
+   "reconcile-recent"
+  ],
+  "output_dtypes": [
+   "post"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "user-hunt": {
+  "actor_id": "user-hunt",
+  "actor_type": "enricher",
+  "authorization": {
+   "credentials": "none for bundled Sherlock backend",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "username-enumeration",
+   "per-provider-rate-limits",
+   "retry-policy"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "backoff_base_seconds": {
+     "default": 0.25,
+     "minimum": 0,
+     "type": "number"
+    },
+    "max_concurrency": {
+     "default": 20,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "retries": {
+     "default": 2,
+     "minimum": 0,
+     "type": "integer"
+    },
+    "timeout": {
+     "default": 30,
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "sherlock-project"
+  ],
+  "entrypoint": "starintel_pro_actors.userhunt:UserHuntActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "cancel active hunts and drain mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "hunt-username",
+   "hunt-usernames",
+   "cancel"
+  ],
+  "output_dtypes": [
+   "user-account",
+   "website",
+   "relation",
+   "userhunt-error"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "username-targets": {
+  "actor_id": "username-targets",
+  "actor_type": "router",
+  "authorization": {
+   "credentials": "RabbitMQ credentials from configuration",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "recursive-username-extraction",
+   "target-fanout",
+   "actor-manifest-consumer",
+   "hard-rate-ceiling",
+   "publisher-confirms"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "binding_key": {
+     "default": "documents.new.#",
+     "type": "string"
+    },
+    "prefetch": {
+     "default": 32,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "queue": {
+     "default": "starintel-pro-actors.username-targets",
+     "type": "string"
+    },
+    "rabbit_host": {
+     "default": "localhost",
+     "type": "string"
+    },
+    "rabbit_password": {
+     "type": "string",
+     "writeOnly": true
+    },
+    "rabbit_port": {
+     "default": 5672,
+     "maximum": 65535,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "rabbit_username": {
+     "type": "string",
+     "writeOnly": true
+    },
+    "rabbit_virtual_host": {
+     "default": "/",
+     "type": "string"
+    },
+    "settlement_timeout": {
+     "default": 30.0,
+     "exclusiveMinimum": 0,
+     "type": "number"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": "starintel-pro-actors.username-targets",
+  "dependencies": [
+   "pika",
+   "pykka"
+  ],
+  "entrypoint": "starintel_pro_actors.username_target_actor:UsernameTargetActor",
+  "input_dtypes": [
+   "actor-manifest",
+   "target",
+   "investigation-target"
+  ],
+  "lifecycle": {
+   "readiness": "queue bound and basic_consume installed",
+   "shutdown": "stop intake, settle bounded work, close RabbitMQ clients",
+   "startup": "publish manifest then bind durable RabbitMQ consumer"
+  },
+  "operations": [
+   "extract-usernames",
+   "fan-out-targets"
+  ],
+  "output_dtypes": [
+   "target"
+  ],
+  "routing_keys": [
+   "documents.new.#",
+   "documents.ingest.actor-manifest",
+   "documents.ingest.target"
+  ],
+  "runtime": "python-pykka-rabbitmq-consumer",
+  "target_options": [
+   {
+    "key": "target_actor",
+    "required": true,
+    "type": "string"
+   },
+   {
+    "default": [],
+    "key": "target_options",
+    "type": "array"
+   },
+   {
+    "key": "max_username_rate_per_second",
+    "minimum": 0.01,
+    "type": "number"
+   }
+  ]
+ },
+ "web": {
+  "actor_id": "web",
+  "actor_type": "crawl-pipeline",
+  "authorization": {
+   "credentials": "none for bundled adapters",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "site-adapter-registry",
+   "browser-policy",
+   "people-directory-extraction",
+   "rabbitmq-or-jsonl-sinks"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "concurrency": {
+     "default": 2,
+     "maximum": 32,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "max_depth": {
+     "default": 2,
+     "minimum": 0,
+     "type": "integer"
+    },
+    "max_pages": {
+     "default": 100,
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "playwright",
+   "beautifulsoup4"
+  ],
+  "entrypoint": "starintel_pro_actors.web.cli:app",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain crawl queues and flush sink",
+   "startup": "local"
+  },
+  "operations": [
+   "sites",
+   "scrape",
+   "verify"
+  ],
+  "output_dtypes": [
+   "person",
+   "source"
+  ],
+  "routing_keys": [
+   "documents.ingest.<dtype>"
+  ],
+  "runtime": "python-browser-runtime",
+  "target_options": []
+ },
+ "whats-my-name-user-hunt": {
+  "actor_id": "whats-my-name-user-hunt",
+  "actor_type": "enricher",
+  "authorization": {
+   "credentials": "none",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "username-enumeration",
+   "whatsmyname-dataset-backend",
+   "post-only-template-support"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "max_concurrency": {
+     "default": 20,
+     "minimum": 1,
+     "type": "integer"
+    },
+    "retries": {
+     "default": 2,
+     "minimum": 0,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "httpx"
+  ],
+  "entrypoint": "starintel_pro_actors.whatsmyname:WhatsMyNameUserHuntActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "cancel active hunts and drain mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "hunt-username",
+   "hunt-usernames",
+   "cancel"
+  ],
+  "output_dtypes": [
+   "user-account",
+   "website",
+   "relation"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "x": {
+  "actor_id": "x",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "operator-supplied X session accounts",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "x-session-collection",
+   "graph-relations",
+   "multi-account-backend"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "STARINTEL_X_ACCOUNTS": {
+     "description": "Session account material supplied outside source control.",
+     "type": "string",
+     "writeOnly": true
+    },
+    "max_attempts": {
+     "default": 3,
+     "minimum": 1,
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "twscrape"
+  ],
+  "entrypoint": "starintel_pro_actors.x_actor:XActorSystem",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain actor mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "collect-account",
+   "collect-post",
+   "collect-thread",
+   "search"
+  ],
+  "output_dtypes": [
+   "post",
+   "account",
+   "relation"
+  ],
+  "routing_keys": [],
+  "runtime": "python-asyncio-actor-system",
+  "target_options": []
+ },
+ "youtube": {
+  "actor_id": "youtube",
+  "actor_type": "collector",
+  "authorization": {
+   "credentials": "optional operator cookie file",
+   "dataset_restrictions": []
+  },
+  "capabilities": [
+   "youtube-channel-collection",
+   "youtube-comment-collection",
+   "youtube-search",
+   "local-auto-dig-import",
+   "session-harvesting"
+  ],
+  "configuration_schema": {
+   "additionalProperties": false,
+   "properties": {
+    "cookie_file": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "writeOnly": true
+    },
+    "request_sleep": {
+     "minimum": 0,
+     "type": "number"
+    }
+   },
+   "type": "object"
+  },
+  "consumer_path": null,
+  "dependencies": [
+   "yt-dlp",
+   "playwright"
+  ],
+  "entrypoint": "starintel_pro_actors.youtube.cli:app",
+  "input_dtypes": [],
+  "lifecycle": {
+   "shutdown": "drain actor mailboxes",
+   "startup": "local"
+  },
+  "operations": [
+   "scrape",
+   "search",
+   "import",
+   "stats"
+  ],
+  "output_dtypes": [
+   "comment",
+   "video",
+   "account"
+  ],
+  "routing_keys": [],
+  "runtime": "python-pykka-browser-service",
+  "target_options": []
+ }
+}
