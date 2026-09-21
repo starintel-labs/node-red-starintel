@@ -1,0 +1,33 @@
+[
+ {
+  "id": "expatternmanifestboard-tab",
+  "type": "tab",
+  "label": "Pattern: manifest board UI",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternmanifestboard-1",
+  "type": "starintel-ui",
+  "z": "expatternmanifestboard-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [],
+  "name": "manifest board",
+  "server": "cfg-f",
+  "path": "manifests",
+  "title": "Actor manifests",
+  "q": "dtype:actor-manifest",
+  "limit": 50,
+  "view": "cards",
+  "columns": "",
+  "refreshSec": 30
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

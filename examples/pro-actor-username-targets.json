@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exausernametargets-tab",
+  "type": "tab",
+  "label": "pro-actor: username-targets",
+  "disabled": false,
+  "info": "Dispatch a target to the username-targets pro-actor (router; operations: extract-usernames, fan-out-targets). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exausernametargets-1",
+  "type": "inject",
+  "z": "exausernametargets-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exausernametargets-2"
+   ]
+  ],
+  "name": "target for username-targets",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exausernametargets-2",
+  "type": "starintel-target",
+  "z": "exausernametargets-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exausernametargets-3"
+   ]
+  ],
+  "name": "dispatch username-targets",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "username-targets",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exausernametargets-3",
+  "type": "debug",
+  "z": "exausernametargets-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

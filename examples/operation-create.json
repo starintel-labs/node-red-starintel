@@ -1,0 +1,65 @@
+[
+ {
+  "id": "exoperationcreate-tab",
+  "type": "tab",
+  "label": "Operations: create an operation",
+  "disabled": false,
+  "info": "StarIntel operation lifecycle (dtype operation). Needs starintel-server."
+ },
+ {
+  "id": "ex-operationcreate-1",
+  "type": "inject",
+  "z": "exoperationcreate-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationcreate-2"
+   ]
+  ],
+  "name": "go",
+  "props": [],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "",
+  "payloadType": "date"
+ },
+ {
+  "id": "ex-operationcreate-2",
+  "type": "starintel-operations",
+  "z": "exoperationcreate-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationcreate-3"
+   ]
+  ],
+  "name": "create operation",
+  "op": "create",
+  "mission": "Map the org",
+  "status": "planned",
+  "phases": "[{\"name\":\"recon\"},{\"name\":\"enrich\"}]",
+  "documentId": "",
+  "phase": "",
+  "emit": true
+ },
+ {
+  "id": "ex-operationcreate-3",
+  "type": "debug",
+  "z": "exoperationcreate-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "result"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

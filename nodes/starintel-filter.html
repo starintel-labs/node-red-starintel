@@ -1,0 +1,86 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-filter', {
+        category: 'starintel',
+        color: '#f39c12',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "rules": {
+                "value": ""
+        },
+        "includeDtypes": {
+                "value": ""
+        },
+        "excludeDtypes": {
+                "value": ""
+        },
+        "dedupeField": {
+                "value": ""
+        },
+        "sortField": {
+                "value": ""
+        },
+        "sortDir": {
+                "value": "asc"
+        },
+        "limit": {
+                "value": 0
+        },
+        "offset": {
+                "value": 0
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'filter.svg',
+        label: function () {
+            return this.name || 'starintel filter';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-filter">
+    <div class="form-row">
+        <label for="node-input-rules"><i class="fa fa-cog"></i> Rules (JSON)</label>
+        <input type="text" id="node-input-rules" placeholder="[{"field":"data.actor","op":"eq","value":"bluesky"}]">
+        <div class="form-tips">ops: eq ne contains prefix gte lte gt lt in nin regex exists; field is a dot-path</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-includeDtypes"><i class="fa fa-cog"></i> Include dtypes</label>
+        <input type="text" id="node-input-includeDtypes" placeholder="username,breach">
+    </div>
+    <div class="form-row">
+        <label for="node-input-excludeDtypes"><i class="fa fa-cog"></i> Exclude dtypes</label>
+        <input type="text" id="node-input-excludeDtypes" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dedupeField"><i class="fa fa-cog"></i> Dedupe field</label>
+        <input type="text" id="node-input-dedupeField" placeholder="data.canonical_key">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sortField"><i class="fa fa-cog"></i> Sort field</label>
+        <input type="text" id="node-input-sortField" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-sortDir"><i class="fa fa-cog"></i> Sort dir</label>
+        <select id="node-input-sortDir">
+            <option value="asc">ascending</option>
+            <option value="desc">descending</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-limit"><i class="fa fa-cog"></i> Limit</label>
+        <input type="number" id="node-input-limit" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-offset"><i class="fa fa-cog"></i> Offset</label>
+        <input type="number" id="node-input-offset" placeholder="">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-filter">
+<p>Advanced client-side filtering for arrays, dataset search results ({docs}) or {rows}. Emits filtered array on msg.payload with counts on msg.filter_stats.</p>
+</script>

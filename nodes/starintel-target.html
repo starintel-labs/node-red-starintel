@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-target', {
+        category: 'starintel',
+        color: '#e67e22',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "op": {
+                "value": "dispatch"
+        },
+        "actor": {
+                "value": ""
+        },
+        "target": {
+                "value": ""
+        },
+        "options": {
+                "value": ""
+        },
+        "delay": {
+                "value": 0
+        },
+        "recurring": {
+                "value": false
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'file.svg',
+        label: function () {
+            return this.name || 'starintel target';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-target">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="dispatch">dispatch (POST /new/target/:actor)</option>
+            <option value="build">build (document only)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-actor"><i class="fa fa-cog"></i> Actor</label>
+        <input type="text" id="node-input-actor" placeholder="empty = msg.actor">
+    </div>
+    <div class="form-row">
+        <label for="node-input-target"><i class="fa fa-cog"></i> Target</label>
+        <input type="text" id="node-input-target" placeholder="empty = msg.payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-options"><i class="fa fa-cog"></i> Options (JSON)</label>
+        <input type="text" id="node-input-options" placeholder="{} or msg.options">
+    </div>
+    <div class="form-row">
+        <label for="node-input-delay"><i class="fa fa-cog"></i> Delay</label>
+        <input type="number" id="node-input-delay" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-recurring"><i class="fa fa-cog"></i> Recurring</label>
+        <input type="checkbox" id="node-input-recurring" placeholder="" style="width: auto">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-target">
+<p>Build and dispatch canonical v0.9 target documents (dtype <code>target</code>, data actor/target/delay/recurring/options).</p>
+</script>

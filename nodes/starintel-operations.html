@@ -1,0 +1,88 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-operations', {
+        category: 'starintel',
+        color: '#c0392b',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "op": {
+                "value": "create"
+        },
+        "mission": {
+                "value": ""
+        },
+        "status": {
+                "value": "planned"
+        },
+        "phases": {
+                "value": ""
+        },
+        "documentId": {
+                "value": ""
+        },
+        "phase": {
+                "value": ""
+        },
+        "emit": {
+                "value": true
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'file.svg',
+        label: function () {
+            return this.name || 'operation';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-operations">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="create">create (mission/status/phases)</option>
+            <option value="get">get by id</option>
+            <option value="set-status">set status (+history)</option>
+            <option value="add-phase">append phase</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-mission"><i class="fa fa-cog"></i> Mission</label>
+        <input type="text" id="node-input-mission" placeholder="empty = msg.payload / msg.mission">
+    </div>
+    <div class="form-row">
+        <label for="node-input-status"><i class="fa fa-cog"></i> Status</label>
+        <input type="text" id="node-input-status" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-phases"><i class="fa fa-cog"></i> Phases (JSON)</label>
+        <input type="text" id="node-input-phases" placeholder="[{"name":"recon"}]">
+    </div>
+    <div class="form-row">
+        <label for="node-input-documentId"><i class="fa fa-cog"></i> Document id</label>
+        <input type="text" id="node-input-documentId" placeholder="empty = msg.id / msg.topic">
+    </div>
+    <div class="form-row">
+        <label for="node-input-phase"><i class="fa fa-cog"></i> Phase (JSON)</label>
+        <input type="text" id="node-input-phase" placeholder="empty = msg.phase">
+    </div>
+    <div class="form-row">
+        <label for="node-input-emit"><i class="fa fa-cog"></i> Emit on create</label>
+        <input type="checkbox" id="node-input-emit" placeholder="" style="width: auto">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-operations">
+<p>StarIntel operation lifecycle (dtype <code>operation</code>; required data mission/status/phases per the v0.9 lock). set-status appends to data.status_history; add-phase appends to data.phases.</p>
+</script>

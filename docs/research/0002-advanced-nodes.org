@@ -1,0 +1,69 @@
+:PROPERTIES:
+:ID: nodered-starintel-0002-advanced
+:END:
+#+title: Advanced node set, provider presets, auto-provisioning
+#+date: 2026-09-20
+#+filetags: :starintel:nodered:adadr:auto-rage:
+
+* Mode
+
+Auto-RAGE (recorded in AGENTS.md; operator command stream of 2026-09-20).
+
+* A — Analyze (verified surfaces)
+
+- Target dispatch: server folds legacy envelopes into v0.9 =target= docs;
+  data fields actor/target/delay/recurring/options; URL actor is
+  authoritative (http-boundary-core.lisp normalize-legacy-target-document).
+- Pro-actors registry: 17 actors with actor_type/operations/dtypes/
+  target_options/configuration_schema (manifests.py; extracted via pika-stub
+  exec into lib/pro-actor-catalog.json).
+- v0.9 dtypes (schema enum, 51): includes =operation= (mission/status/
+  phases + objectives/targets/...), =alert= (rule_id/first_triggered_at/
+  ... + common fields), =task=. No =notification= dtype — notification
+  support uses =alert= documents.
+- llm.starintel.actor: single public OpenAI-compatible surface
+  (qwen3-8b/qwen38-27b/bge-m3), STARINTEL_LLM_API_KEY env auth.
+- hackmode tool systems live under source/hackmode-tools/* (recon-dns
+  exports subfinder/dnsrecon/cert.sh/oam-subs/check-mdi); tools are CL
+  functions, loaded via ASDF central-registry.
+- Node-RED runtime loader gives each node file its own RED view (live
+  regression found 2026-09-20); shared logic must live in require()d libs.
+- starintel-server compose deployment runs STAR_AUTH_MODE=api-key with
+  secrets under ./secrets (auth-aware clients are a follow-up; nodes stay
+  keyless and LAN-only).
+
+* D — Design
+
+- Canonical doc lib (lib/starintel-docs.js) + catalog
+  (lib/pro-actor-catalog.json) as the single source of document truth.
+- Eight new starintel nodes + message2org (see AGENTS.md inventory).
+- prolog-rlm provider presets resolved in the runtime config ctor.
+- hackmode auto-provision (recursive shallow clone into XDG data,
+  fast-forward refresh) + per-tool node generator.
+- Example library generated (scripts/gen-examples.py) — 51 flows across
+  the three palettes; metaprogramming scaffolders for nodes and tools.
+
+* Adversarial review
+
+- Loader isolation -> all shared logic in lib/; loaded-alone regression
+  tests.
+- Template injection -> payload escaped into Lisp strings; forms are
+  operator-owned flow code (same trust as function nodes).
+- Clone-on-start blocking the event loop -> provision is callback/async
+  and cached; refresh is explicit.
+- flow-manager privilege -> documented as trusted-operator surface; auth
+  header referenced by env name only.
+- ui endpoints -> deterministic mount paths; read-only dataset search.
+
+* Decision
+
+Ship the eight-node set + presets + auto-provision + generators + 51
+examples. Deferred with issues: tek9, git/gh/tea, opencode agents, A2A
+operation executor, crew-AI, MCP-server maker, code-agent nodes, Kali
+category slices, hackmode spec 0.10.1 (blocked on format definition).
+
+* Verification
+
+- node --test: starintel 34/34, prolog-rlm 13/13, hackmode 10/10.
+- nix flake check green per repo; CI on PR heads.
+- Live e2e: real server via nix-built images + compose (rage/4 evidence).

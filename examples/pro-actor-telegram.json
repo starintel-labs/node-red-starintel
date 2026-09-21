@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exatelegram-tab",
+  "type": "tab",
+  "label": "pro-actor: telegram",
+  "disabled": false,
+  "info": "Dispatch a target to the telegram pro-actor (continuous-collector; operations: collect-history, reconcile-recent). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exatelegram-1",
+  "type": "inject",
+  "z": "exatelegram-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exatelegram-2"
+   ]
+  ],
+  "name": "target for telegram",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exatelegram-2",
+  "type": "starintel-target",
+  "z": "exatelegram-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exatelegram-3"
+   ]
+  ],
+  "name": "dispatch telegram",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "telegram",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exatelegram-3",
+  "type": "debug",
+  "z": "exatelegram-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

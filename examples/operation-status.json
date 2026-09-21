@@ -1,0 +1,65 @@
+[
+ {
+  "id": "exoperationstatus-tab",
+  "type": "tab",
+  "label": "Operations: advance status",
+  "disabled": false,
+  "info": "StarIntel operation lifecycle (dtype operation). Needs starintel-server."
+ },
+ {
+  "id": "ex-operationstatus-1",
+  "type": "inject",
+  "z": "exoperationstatus-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationstatus-2"
+   ]
+  ],
+  "name": "go",
+  "props": [],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "",
+  "payloadType": "date"
+ },
+ {
+  "id": "ex-operationstatus-2",
+  "type": "starintel-operations",
+  "z": "exoperationstatus-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationstatus-3"
+   ]
+  ],
+  "name": "set status active",
+  "op": "set-status",
+  "mission": "",
+  "status": "active",
+  "phases": "",
+  "documentId": "REPLACE_WITH_OP_ID",
+  "phase": "",
+  "emit": false
+ },
+ {
+  "id": "ex-operationstatus-3",
+  "type": "debug",
+  "z": "exoperationstatus-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "result"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

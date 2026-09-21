@@ -1,0 +1,64 @@
+[
+ {
+  "id": "expatternmessagetoorg-tab",
+  "type": "tab",
+  "label": "Pattern: message to Org",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternmessagetoorg-1",
+  "type": "starintel-input",
+  "z": "expatternmessagetoorg-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternmessagetoorg-2"
+   ]
+  ],
+  "name": "messages",
+  "server": "cfg-f",
+  "mode": "search",
+  "q": "dtype:message",
+  "limit": 25,
+  "params": "",
+  "documentId": "",
+  "split": false
+ },
+ {
+  "id": "ex-patternmessagetoorg-2",
+  "type": "message2org",
+  "z": "expatternmessagetoorg-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternmessagetoorg-3"
+   ]
+  ],
+  "name": "to org",
+  "headingLevel": 2,
+  "drawer": true,
+  "timestamps": "org",
+  "tags": "full",
+  "quoteLevel": 0,
+  "separator": "\\n\\n"
+ },
+ {
+  "id": "ex-patternmessagetoorg-3",
+  "type": "debug",
+  "z": "expatternmessagetoorg-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "org"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

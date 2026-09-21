@@ -1,0 +1,48 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-emit', {
+        category: 'starintel',
+        color: '#2980b9',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "dtype": {
+                "value": "observation"
+        },
+        "bulk": {
+                "value": false
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'arrow-out.svg',
+        label: function () {
+            return this.name || 'starintel emit';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-emit">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dtype"><i class="fa fa-cog"></i> Dtype (for raw data)</label>
+        <input type="text" id="node-input-dtype" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-bulk"><i class="fa fa-cog"></i> Force bulk</label>
+        <input type="checkbox" id="node-input-bulk" placeholder="" style="width: auto">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-emit">
+<p>Canonical emit: completes the v0.9 envelope client-side (dtype/data/schema_version/version/dates/sources/evidence) and ingests via /api/v1/documents or /bulk (arrays or forced bulk). Full documents pass through untouched.</p>
+</script>

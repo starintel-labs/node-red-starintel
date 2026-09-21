@@ -1,0 +1,62 @@
+[
+ {
+  "id": "expatternagentreconfigure-tab",
+  "type": "tab",
+  "label": "Pattern: agent reconfigures node-red",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternagentreconfigure-1",
+  "type": "inject",
+  "z": "expatternagentreconfigure-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternagentreconfigure-2"
+   ]
+  ],
+  "name": "flows request",
+  "props": [],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "",
+  "payloadType": "date"
+ },
+ {
+  "id": "ex-patternagentreconfigure-2",
+  "type": "starintel-flow-manager",
+  "z": "expatternagentreconfigure-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternagentreconfigure-3"
+   ]
+  ],
+  "name": "get flows",
+  "op": "get-flows",
+  "baseUrl": "http://127.0.0.1:1880",
+  "authEnv": "",
+  "timeoutMs": 8000
+ },
+ {
+  "id": "ex-patternagentreconfigure-3",
+  "type": "debug",
+  "z": "expatternagentreconfigure-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "current flows"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

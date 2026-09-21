@@ -1,0 +1,4 @@
+* Run identity
+- Consumed issue :: #4
+- Branch :: =rage/4-advanced-nodes=
+- RAGE start commit :: =a80aaa6a27f0ecdb1521b2db96892f153326bc0d=

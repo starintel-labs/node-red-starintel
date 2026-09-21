@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exadomainhunt-tab",
+  "type": "tab",
+  "label": "pro-actor: domain-hunt",
+  "disabled": false,
+  "info": "Dispatch a target to the domain-hunt pro-actor (collector; operations: query-crtsh, register-certstream-scope, ingest-certstream-event). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exadomainhunt-1",
+  "type": "inject",
+  "z": "exadomainhunt-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exadomainhunt-2"
+   ]
+  ],
+  "name": "target for domain-hunt",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exadomainhunt-2",
+  "type": "starintel-target",
+  "z": "exadomainhunt-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exadomainhunt-3"
+   ]
+  ],
+  "name": "dispatch domain-hunt",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "domain-hunt",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exadomainhunt-3",
+  "type": "debug",
+  "z": "exadomainhunt-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

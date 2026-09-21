@@ -1,0 +1,46 @@
+[
+ {
+  "id": "t-flow-manager-deploy",
+  "type": "tab",
+  "label": "Flow manager: deploy a generated flow",
+  "disabled": false,
+  "info": "put-flows deploys msg.payload as the full runtime configuration (rev-safe). Agents use this to reconfigure Node-RED."
+ },
+ {
+  "id": "n-flow-manager-deploy-0",
+  "type": "inject",
+  "z": "t-flow-manager-deploy",
+  "x": 200,
+  "y": 120,
+  "wires": [
+   [
+    "n-flow-manager-deploy-1"
+   ]
+  ],
+  "name": "tiny flow",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "payloadType": "json",
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "[{\"id\":\"gen-1\",\"type\":\"tab\",\"label\":\"generated\"}]"
+ },
+ {
+  "id": "n-flow-manager-deploy-1",
+  "type": "starintel-flow-manager",
+  "z": "t-flow-manager-deploy",
+  "x": 440,
+  "y": 120,
+  "wires": [],
+  "name": "deploy",
+  "op": "put-flows",
+  "baseUrl": "http://127.0.0.1:1880",
+  "authEnv": "",
+  "timeoutMs": 8000
+ }
+]

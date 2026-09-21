@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-input', {
+        category: 'starintel',
+        color: '#27ae60',
+        defaults: {
+
+        "name": {
+                "value": ""
+        },
+        "server": {
+                "type": "starintel-server",
+                "required": true
+        },
+        "mode": {
+                "value": "search"
+        },
+        "q": {
+                "value": ""
+        },
+        "limit": {
+                "value": 25
+        },
+        "params": {
+                "value": ""
+        },
+        "documentId": {
+                "value": ""
+        },
+        "split": {
+                "value": true
+        }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'arrow-in.svg',
+        label: function () {
+            return this.name || 'starintel input';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-input">
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-cog"></i> Mode</label>
+        <select id="node-input-mode">
+            <option value="search">dataset search</option>
+            <option value="get">get by id</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-q"><i class="fa fa-cog"></i> Search q</label>
+        <input type="text" id="node-input-q" placeholder="empty = msg.q / msg.payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-limit"><i class="fa fa-cog"></i> Limit</label>
+        <input type="number" id="node-input-limit" placeholder="">
+    </div>
+    <div class="form-row">
+        <label for="node-input-params"><i class="fa fa-cog"></i> Params (JSON)</label>
+        <input type="text" id="node-input-params" placeholder="{"dataset":"default"}">
+    </div>
+    <div class="form-row">
+        <label for="node-input-documentId"><i class="fa fa-cog"></i> Document id</label>
+        <input type="text" id="node-input-documentId" placeholder="empty = msg.id">
+    </div>
+    <div class="form-row">
+        <label for="node-input-split"><i class="fa fa-cog"></i> Split (one msg per doc)</label>
+        <input type="checkbox" id="node-input-split" placeholder="" style="width: auto">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="starintel-input">
+<p>Canonical StarIntel input: search the dataset (include_docs) or fetch by id. With split on, emits one message per document with the doc on msg.payload; otherwise the result envelope.</p>
+</script>

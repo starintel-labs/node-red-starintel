@@ -1,0 +1,60 @@
+[
+ {
+  "id": "expatternusernamepipeline-tab",
+  "type": "tab",
+  "label": "Pattern: hunt -> enrich -> emit",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternusernamepipeline-1",
+  "type": "starintel-input",
+  "z": "expatternusernamepipeline-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternusernamepipeline-2"
+   ]
+  ],
+  "name": "usernames",
+  "server": "cfg-f",
+  "mode": "search",
+  "q": "dtype:username",
+  "limit": 25,
+  "params": "",
+  "documentId": "",
+  "split": true
+ },
+ {
+  "id": "ex-patternusernamepipeline-2",
+  "type": "starintel-emit",
+  "z": "expatternusernamepipeline-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternusernamepipeline-3"
+   ]
+  ],
+  "name": "emit observations",
+  "dtype": "observation",
+  "bulk": false
+ },
+ {
+  "id": "ex-patternusernamepipeline-3",
+  "type": "debug",
+  "z": "expatternusernamepipeline-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "emitted"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

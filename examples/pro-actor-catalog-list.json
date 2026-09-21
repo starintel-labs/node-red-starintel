@@ -1,0 +1,42 @@
+[
+ {
+  "id": "t-pro-actor-catalog-list",
+  "type": "tab",
+  "label": "Pro-actors: full catalog",
+  "disabled": false,
+  "info": "Emit the built-in 17-actor pro-actor catalog (no server needed)."
+ },
+ {
+  "id": "n-pro-actor-catalog-list-0",
+  "type": "inject",
+  "z": "t-pro-actor-catalog-list",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "n-pro-actor-catalog-list-1"
+   ]
+  ],
+  "name": "go",
+  "props": [],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "",
+  "payloadType": "date"
+ },
+ {
+  "id": "n-pro-actor-catalog-list-1",
+  "type": "starintel-pro-actors",
+  "z": "t-pro-actor-catalog-list",
+  "x": 400,
+  "y": 120,
+  "wires": [],
+  "name": "catalog",
+  "server": "",
+  "op": "list",
+  "actor": "",
+  "emit": false
+ }
+]

@@ -1,0 +1,55 @@
+[
+ {
+  "id": "t-documents-crud-delete",
+  "type": "tab",
+  "label": "Documents: delete by id",
+  "disabled": false,
+  "info": "Delete a document via the versioned API. Needs starintel-server."
+ },
+ {
+  "id": "n-documents-crud-delete-0",
+  "type": "inject",
+  "z": "t-documents-crud-delete",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "n-documents-crud-delete-1"
+   ]
+  ],
+  "name": "id",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "REPLACE_DOC_ID",
+  "payloadType": "str"
+ },
+ {
+  "id": "n-documents-crud-delete-1",
+  "type": "starintel-documents",
+  "z": "t-documents-crud-delete",
+  "x": 420,
+  "y": 120,
+  "wires": [],
+  "name": "delete",
+  "server": "c1",
+  "op": "delete",
+  "documentId": "",
+  "q": "",
+  "path": "",
+  "params": ""
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "c1"
+ }
+]

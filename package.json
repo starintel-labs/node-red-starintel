@@ -1,6 +1,6 @@
 {
   "name": "node-red-starintel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "StarIntel Node-RED nodes: documents, datasets, actor manifests, and agentic starintel-rlm actors",
   "license": "MIT",
   "repository": {
@@ -26,7 +26,16 @@
       "starintel-server": "nodes/starintel-server.js",
       "starintel-documents": "nodes/starintel-documents.js",
       "starintel-actors": "nodes/starintel-actors.js",
-      "starintel-rlm": "nodes/starintel-rlm.js"
+      "starintel-rlm": "nodes/starintel-rlm.js",
+      "starintel-target": "nodes/starintel-target.js",
+      "starintel-pro-actors": "nodes/starintel-pro-actors.js",
+      "starintel-filter": "nodes/starintel-filter.js",
+      "starintel-operations": "nodes/starintel-operations.js",
+      "starintel-input": "nodes/starintel-input.js",
+      "starintel-emit": "nodes/starintel-emit.js",
+      "starintel-flow-manager": "nodes/starintel-flow-manager.js",
+      "starintel-ui": "nodes/starintel-ui.js",
+      "message2org": "nodes/message2org.js"
     }
   }
 }
