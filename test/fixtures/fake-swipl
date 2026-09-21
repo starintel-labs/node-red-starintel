@@ -1,0 +1,29 @@
+#!/bin/sh
+# Deterministic fake swipl for node tests. Records observed argv and whether
+# the secret env var reached the subprocess (env passthrough is intended) to
+# the file named by FAKE_SWIPL_CAPTURE, then prints a canned trace-envelope
+# JSON. Modes via FAKE_SWIPL_MODE: ok (default) | fail | garbage | sleep.
+exec node -e '
+const fs = require("node:fs");
+const mode = process.env.FAKE_SWIPL_MODE || "ok";
+const capture = process.env.FAKE_SWIPL_CAPTURE || "/tmp/fake-swipl-capture.json";
+const record = {
+  argv: process.argv.slice(1),
+  hasSecretEnv: process.env.FAKE_SECRET_VALUE !== undefined
+};
+fs.writeFileSync(capture, JSON.stringify(record));
+if (mode === "fail") {
+  console.error("fake provider failure");
+  process.exit(3);
+}
+if (mode === "garbage") {
+  process.stdout.write("this is not JSON\n");
+  process.exit(0);
+}
+if (mode === "sleep") {
+  setTimeout(() => { process.stdout.write("{}\n"); process.exit(0); }, 5000);
+} else {
+  process.stdout.write("{\"ok\":true,\"command\":\"canned\",\"version\":\"0.1.0-fake\"}\n");
+  process.exit(0);
+}
+' -- "$@"

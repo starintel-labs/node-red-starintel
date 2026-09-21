@@ -1,0 +1,90 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-rlm', {
+        category: 'starintel',
+        color: '#c0392b',
+        defaults: {
+            name: { value: '' },
+            server: { type: 'starintel-server', required: true },
+            runtime: { type: 'prolog-rlm-runtime', required: true },
+            query: { value: '' },
+            contextMode: { value: 'none' },
+            contextStatic: { value: '' },
+            datasetQ: { value: '*:*' },
+            datasetLimit: { value: 10 },
+            publishManifest: { value: false },
+            actorName: { value: 'starintel-rlm' },
+            targetOptions: { value: '' }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'bridge-dash.svg',
+        label: function () {
+            return this.name || 'starintel-rlm';
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-rlm">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> StarIntel server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-runtime"><i class="fa fa-flask"></i> prolog-rlm runtime</label>
+        <input type="text" id="node-input-runtime">
+        <div class="form-tips">Requires the <code>node-red-prolog-rlm</code> palette for the runtime config node.</div>
+    </div>
+    <div class="form-row">
+        <label for="node-input-query"><i class="fa fa-question"></i> Query</label>
+        <input type="text" id="node-input-query" placeholder="empty = msg.payload">
+    </div>
+    <div class="form-row">
+        <label for="node-input-contextMode"><i class="fa fa-book"></i> Context</label>
+        <select id="node-input-contextMode">
+            <option value="none">none</option>
+            <option value="static">static text</option>
+            <option value="dataset">StarIntel dataset search</option>
+            <option value="msg">msg.context</option>
+        </select>
+    </div>
+    <div class="form-row" id="node-row-contextStatic">
+        <label for="node-input-contextStatic"><i class="fa fa-file-text"></i> Static context</label>
+        <input type="text" id="node-input-contextStatic">
+    </div>
+    <div class="form-row" id="node-row-datasetQ">
+        <label for="node-input-datasetQ"><i class="fa fa-search"></i> Dataset q</label>
+        <input type="text" id="node-input-datasetQ" placeholder="*:* or dtype:username">
+    </div>
+    <div class="form-row" id="node-row-datasetLimit">
+        <label for="node-input-datasetLimit"><i class="fa fa-sort-numeric-asc"></i> Dataset limit</label>
+        <input type="number" id="node-input-datasetLimit" placeholder="10">
+    </div>
+    <div class="form-row">
+        <label for="node-input-publishManifest"><i class="fa fa-bullhorn"></i> Publish manifest</label>
+        <input type="checkbox" id="node-input-publishManifest" style="width: auto">
+    </div>
+    <div class="form-row">
+        <label for="node-input-actorName"><i class="fa fa-user-secret"></i> Actor name</label>
+        <input type="text" id="node-input-actorName" placeholder="starintel-rlm">
+    </div>
+    <div class="form-row">
+        <label for="node-input-targetOptions"><i class="fa fa-list"></i> Target options</label>
+        <input type="text" id="node-input-targetOptions" placeholder="comma,separated,options">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="starintel-rlm">
+    <p>Agentic StarIntel actor: runs a prolog-rlm RLM loop with StarIntel
+       dataset context.</p>
+    <p>Context can be static, taken from <code>msg.context</code>, or fetched live
+       from the dataset via the configured search query (bounded by the
+       runtime's context-bytes budget). The trace-envelope result lands on
+       <code>msg.payload</code>. With <b>publish manifest</b> enabled the node also
+       ingests an actor-manifest v0.9 document advertising this agentic
+       actor; manifest failure is reported on <code>msg.manifest_error</code> without
+       dropping the agent result.</p>
+</script>

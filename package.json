@@ -1,0 +1,32 @@
+{
+  "name": "node-red-starintel",
+  "version": "0.1.0",
+  "description": "StarIntel Node-RED nodes: documents, datasets, actor manifests, and agentic starintel-rlm actors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/starintel-labs/node-red-starintel.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "keywords": [
+    "node-red",
+    "starintel",
+    "osint",
+    "actor",
+    "agent",
+    "rlm"
+  ],
+  "node-red": {
+    "nodes": {
+      "starintel-server": "nodes/starintel-server.js",
+      "starintel-documents": "nodes/starintel-documents.js",
+      "starintel-actors": "nodes/starintel-actors.js",
+      "starintel-rlm": "nodes/starintel-rlm.js"
+    }
+  }
+}

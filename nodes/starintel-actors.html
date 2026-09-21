@@ -1,0 +1,83 @@
+<script type="text/javascript">
+    RED.nodes.registerType('starintel-actors', {
+        category: 'starintel',
+        color: '#d35400',
+        defaults: {
+            name: { value: '' },
+            server: { type: 'starintel-server', required: true },
+            op: { value: 'manifests' },
+            actor: { value: '' },
+            actorName: { value: '' },
+            manifestType: { value: 'node' },
+            consumerPath: { value: '' },
+            targetOptions: { value: '' },
+            q: { value: 'dtype:actor-manifest' },
+            limit: { value: 100 }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: 'star.svg',
+        label: function () {
+            return this.name || 'actors: ' + (this.op || 'manifests');
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="starintel-actors">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> Server</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-op"><i class="fa fa-cog"></i> Operation</label>
+        <select id="node-input-op">
+            <option value="manifests">manifests (search dataset for actor-manifests)</option>
+            <option value="dispatch">dispatch (POST /new/target/:actor)</option>
+            <option value="targets">targets (GET /targets/:actor)</option>
+            <option value="publish">publish (ingest actor-manifest)</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-actor"><i class="fa fa-user-secret"></i> Actor</label>
+        <input type="text" id="node-input-actor" placeholder="empty = msg.actor">
+    </div>
+    <div class="form-row">
+        <label for="node-input-q"><i class="fa fa-search"></i> Manifest search q</label>
+        <input type="text" id="node-input-q">
+    </div>
+    <div class="form-row">
+        <label for="node-input-limit"><i class="fa fa-sort-numeric-asc"></i> Limit</label>
+        <input type="number" id="node-input-limit" placeholder="100">
+    </div>
+    <div class="form-row">
+        <label for="node-input-actorName"><i class="fa fa-id-card"></i> Publish name</label>
+        <input type="text" id="node-input-actorName">
+    </div>
+    <div class="form-row">
+        <label for="node-input-manifestType"><i class="fa fa-certificate"></i> Manifest type</label>
+        <input type="text" id="node-input-manifestType" placeholder="node">
+    </div>
+    <div class="form-row">
+        <label for="node-input-consumerPath"><i class="fa fa-route"></i> Consumer path</label>
+        <input type="text" id="node-input-consumerPath">
+    </div>
+    <div class="form-row">
+        <label for="node-input-targetOptions"><i class="fa fa-list"></i> Target options</label>
+        <input type="text" id="node-input-targetOptions" placeholder="comma,separated,options">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="starintel-actors">
+    <p>StarIntel actor operations.</p>
+    <p><b>manifests</b> searches the dataset for actor-manifest documents (all
+       manifests known to the server). <b>dispatch</b> sends <code>msg.payload</code>
+       as a new target to an actor via <code>POST /new/target/:actor</code>.
+       <b>targets</b> lists dispatched targets for an actor. <b>publish</b>
+       ingests an actor-manifest v0.9 document built from the publish fields
+       (strict data fields only; richer contracts belong to the
+       extensions.starintel.actor_manifest.v1 follow-up).</p>
+</script>
