@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exacrimethincpodcasts-tab",
+  "type": "tab",
+  "label": "pro-actor: crimethinc-podcasts",
+  "disabled": false,
+  "info": "Dispatch a target to the crimethinc-podcasts pro-actor (collector; operations: ingest). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exacrimethincpodcasts-1",
+  "type": "inject",
+  "z": "exacrimethincpodcasts-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exacrimethincpodcasts-2"
+   ]
+  ],
+  "name": "target for crimethinc-podcasts",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exacrimethincpodcasts-2",
+  "type": "starintel-target",
+  "z": "exacrimethincpodcasts-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exacrimethincpodcasts-3"
+   ]
+  ],
+  "name": "dispatch crimethinc-podcasts",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "crimethinc-podcasts",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exacrimethincpodcasts-3",
+  "type": "debug",
+  "z": "exacrimethincpodcasts-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

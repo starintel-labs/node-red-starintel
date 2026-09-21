@@ -1,0 +1,33 @@
+[
+ {
+  "id": "t-ui-table-hosts",
+  "type": "tab",
+  "label": "UI: hosts table",
+  "disabled": false,
+  "info": "Live table of host documents at /starintel-ui/hosts with 60s refresh."
+ },
+ {
+  "id": "n-ui-table-hosts-0",
+  "type": "starintel-ui",
+  "z": "t-ui-table-hosts",
+  "x": 300,
+  "y": 120,
+  "wires": [],
+  "name": "hosts board",
+  "server": "c1",
+  "path": "hosts",
+  "title": "Hosts",
+  "q": "dtype:host",
+  "limit": 50,
+  "view": "table",
+  "columns": "data.ip,data.hostname",
+  "refreshSec": 60
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "c1"
+ }
+]

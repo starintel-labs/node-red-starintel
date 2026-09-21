@@ -1,0 +1,89 @@
+[
+ {
+  "id": "expatternagenticoperation-tab",
+  "type": "tab",
+  "label": "Pattern: agentic starintel-rlm on dataset",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternagenticoperation-1",
+  "type": "inject",
+  "z": "expatternagenticoperation-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternagenticoperation-2"
+   ]
+  ],
+  "name": "ask",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "Which actors are advertised and what do they collect?",
+  "payloadType": "str"
+ },
+ {
+  "id": "ex-patternagenticoperation-2",
+  "type": "starintel-rlm",
+  "z": "expatternagenticoperation-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternagenticoperation-3"
+   ]
+  ],
+  "name": "starintel-rlm",
+  "server": "cfg-f",
+  "runtime": "cfg-r",
+  "query": "",
+  "contextMode": "dataset",
+  "contextStatic": "",
+  "datasetQ": "dtype:actor-manifest",
+  "datasetLimit": 10,
+  "publishManifest": false,
+  "actorName": "playground-agent",
+  "targetOptions": ""
+ },
+ {
+  "id": "ex-patternagenticoperation-3",
+  "type": "debug",
+  "z": "expatternagenticoperation-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "envelope"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ },
+ {
+  "type": "prolog-rlm-runtime",
+  "name": "llm.starintel.actor",
+  "swipl": "swipl",
+  "rlmHome": "/home/unseen/Documents/Projects/prolog-rlm",
+  "provider": "llm.starintel.actor",
+  "model": "",
+  "endpoint": "",
+  "credentialEnv": "",
+  "noCredential": false,
+  "maxTokens": 0,
+  "maxCost": "",
+  "timeLimit": 90,
+  "contextBytes": 8192,
+  "hardTimeoutMs": 120000,
+  "id": "cfg-r"
+ }
+]

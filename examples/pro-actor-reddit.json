@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exareddit-tab",
+  "type": "tab",
+  "label": "pro-actor: reddit",
+  "disabled": false,
+  "info": "Dispatch a target to the reddit pro-actor (collector; operations: collect-post, collect-user, collect-subreddit, search). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exareddit-1",
+  "type": "inject",
+  "z": "exareddit-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exareddit-2"
+   ]
+  ],
+  "name": "target for reddit",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exareddit-2",
+  "type": "starintel-target",
+  "z": "exareddit-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exareddit-3"
+   ]
+  ],
+  "name": "dispatch reddit",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "reddit",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exareddit-3",
+  "type": "debug",
+  "z": "exareddit-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exacracked-tab",
+  "type": "tab",
+  "label": "pro-actor: cracked",
+  "disabled": false,
+  "info": "Dispatch a target to the cracked pro-actor (crawl-pipeline; operations: crawl, resume). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exacracked-1",
+  "type": "inject",
+  "z": "exacracked-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exacracked-2"
+   ]
+  ],
+  "name": "target for cracked",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exacracked-2",
+  "type": "starintel-target",
+  "z": "exacracked-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exacracked-3"
+   ]
+  ],
+  "name": "dispatch cracked",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "cracked",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exacracked-3",
+  "type": "debug",
+  "z": "exacracked-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

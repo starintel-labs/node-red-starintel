@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exauserhunt-tab",
+  "type": "tab",
+  "label": "pro-actor: user-hunt",
+  "disabled": false,
+  "info": "Dispatch a target to the user-hunt pro-actor (enricher; operations: hunt-username, hunt-usernames, cancel). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exauserhunt-1",
+  "type": "inject",
+  "z": "exauserhunt-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exauserhunt-2"
+   ]
+  ],
+  "name": "target for user-hunt",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exauserhunt-2",
+  "type": "starintel-target",
+  "z": "exauserhunt-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exauserhunt-3"
+   ]
+  ],
+  "name": "dispatch user-hunt",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "user-hunt",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exauserhunt-3",
+  "type": "debug",
+  "z": "exauserhunt-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]

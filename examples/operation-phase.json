@@ -1,0 +1,65 @@
+[
+ {
+  "id": "exoperationphase-tab",
+  "type": "tab",
+  "label": "Operations: append phase",
+  "disabled": false,
+  "info": "StarIntel operation lifecycle (dtype operation). Needs starintel-server."
+ },
+ {
+  "id": "ex-operationphase-1",
+  "type": "inject",
+  "z": "exoperationphase-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationphase-2"
+   ]
+  ],
+  "name": "go",
+  "props": [],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "",
+  "payloadType": "date"
+ },
+ {
+  "id": "ex-operationphase-2",
+  "type": "starintel-operations",
+  "z": "exoperationphase-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-operationphase-3"
+   ]
+  ],
+  "name": "add phase",
+  "op": "add-phase",
+  "mission": "",
+  "status": "",
+  "phases": "",
+  "documentId": "REPLACE_WITH_OP_ID",
+  "phase": "{\"name\":\"report\"}",
+  "emit": false
+ },
+ {
+  "id": "ex-operationphase-3",
+  "type": "debug",
+  "z": "exoperationphase-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "result"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

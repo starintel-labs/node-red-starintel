@@ -1,0 +1,63 @@
+[
+ {
+  "id": "exfilterregexemail-tab",
+  "type": "tab",
+  "label": "Filter: regex on email",
+  "disabled": false,
+  "info": "Advanced filtering over starintel-input results. Needs starintel-server."
+ },
+ {
+  "id": "ex-filterregexemail-1",
+  "type": "starintel-input",
+  "z": "exfilterregexemail-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-filterregexemail-2"
+   ]
+  ],
+  "name": "dataset: posts",
+  "server": "cfg-f",
+  "mode": "search",
+  "q": "dtype:post",
+  "limit": 100,
+  "params": "",
+  "documentId": "",
+  "split": false
+ },
+ {
+  "id": "ex-filterregexemail-2",
+  "type": "starintel-filter",
+  "z": "exfilterregexemail-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-filterregexemail-3"
+   ]
+  ],
+  "name": "filter",
+  "rules": "[{\"field\":\"data.email\",\"op\":\"regex\",\"value\":\"@starintel\\\\.actor$\"}]",
+  "includeDtypes": "",
+  "excludeDtypes": "",
+  "limit": 25,
+  "offset": 0
+ },
+ {
+  "id": "ex-filterregexemail-3",
+  "type": "debug",
+  "z": "exfilterregexemail-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [],
+  "name": "filtered"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

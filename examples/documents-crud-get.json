@@ -1,0 +1,93 @@
+[
+ {
+  "id": "t-documents-crud-get",
+  "type": "tab",
+  "label": "Documents: get + update",
+  "disabled": false,
+  "info": "Fetch a document by id, mutate data, PUT it back. Needs starintel-server."
+ },
+ {
+  "id": "n-documents-crud-get-0",
+  "type": "inject",
+  "z": "t-documents-crud-get",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "n-documents-crud-get-1"
+   ]
+  ],
+  "name": "id",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "REPLACE_DOC_ID",
+  "payloadType": "str"
+ },
+ {
+  "id": "n-documents-crud-get-1",
+  "type": "starintel-documents",
+  "z": "t-documents-crud-get",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "n-documents-crud-get-2"
+   ]
+  ],
+  "name": "get",
+  "server": "c1",
+  "op": "get",
+  "documentId": "",
+  "q": "",
+  "path": "",
+  "params": ""
+ },
+ {
+  "id": "n-documents-crud-get-2",
+  "type": "function",
+  "z": "t-documents-crud-get",
+  "x": 600,
+  "y": 120,
+  "wires": [
+   [
+    "n-documents-crud-get-3"
+   ]
+  ],
+  "name": "bump",
+  "func": "msg.payload.data.touched = 1; return msg;",
+  "outputs": 1,
+  "noerr": 0,
+  "initialize": "",
+  "finalize": "",
+  "libs": []
+ },
+ {
+  "id": "n-documents-crud-get-3",
+  "type": "starintel-documents",
+  "z": "t-documents-crud-get",
+  "x": 820,
+  "y": 120,
+  "wires": [],
+  "name": "update",
+  "server": "c1",
+  "op": "update",
+  "documentId": "",
+  "q": "",
+  "path": "",
+  "params": ""
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "c1"
+ }
+]

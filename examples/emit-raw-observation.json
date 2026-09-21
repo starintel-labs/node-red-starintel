@@ -1,0 +1,52 @@
+[
+ {
+  "id": "t-emit-raw-observation",
+  "type": "tab",
+  "label": "Emit: raw data to observation docs",
+  "disabled": false,
+  "info": "Wrap raw msg.payload data into canonical v0.9 observation documents and bulk ingest."
+ },
+ {
+  "id": "n-emit-raw-observation-0",
+  "type": "inject",
+  "z": "t-emit-raw-observation",
+  "x": 200,
+  "y": 120,
+  "wires": [
+   [
+    "n-emit-raw-observation-1"
+   ]
+  ],
+  "name": "note",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "payloadType": "json",
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "{\"note\":\"saw a thing\"}"
+ },
+ {
+  "id": "n-emit-raw-observation-1",
+  "type": "starintel-emit",
+  "z": "t-emit-raw-observation",
+  "x": 430,
+  "y": 120,
+  "wires": [],
+  "name": "emit observation",
+  "server": "c1",
+  "dtype": "observation",
+  "bulk": false
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "c1"
+ }
+]

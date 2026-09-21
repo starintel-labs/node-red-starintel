@@ -1,0 +1,78 @@
+[
+ {
+  "id": "expatternalertonbreach-tab",
+  "type": "tab",
+  "label": "Pattern: breach watch -> alert emit",
+  "disabled": false,
+  "info": "Canonical StarIntel document-flow pattern."
+ },
+ {
+  "id": "ex-patternalertonbreach-1",
+  "type": "starintel-input",
+  "z": "expatternalertonbreach-tab",
+  "x": 180,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternalertonbreach-2"
+   ]
+  ],
+  "name": "breaches",
+  "server": "cfg-f",
+  "mode": "search",
+  "q": "dtype:breach",
+  "limit": 10,
+  "params": "",
+  "documentId": "",
+  "split": false
+ },
+ {
+  "id": "ex-patternalertonbreach-2",
+  "type": "starintel-filter",
+  "z": "expatternalertonbreach-tab",
+  "x": 400,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternalertonbreach-3"
+   ]
+  ],
+  "name": "only starintel.actor domains",
+  "rules": "[{\"field\":\"data.domain\",\"op\":\"regex\",\"value\":\"starintel\"}]",
+  "includeDtypes": "",
+  "excludeDtypes": "",
+  "limit": 0,
+  "offset": 0
+ },
+ {
+  "id": "ex-patternalertonbreach-3",
+  "type": "starintel-emit",
+  "z": "expatternalertonbreach-tab",
+  "x": 620,
+  "y": 120,
+  "wires": [
+   [
+    "ex-patternalertonbreach-4"
+   ]
+  ],
+  "name": "emit alerts",
+  "dtype": "alert",
+  "bulk": true
+ },
+ {
+  "id": "ex-patternalertonbreach-4",
+  "type": "debug",
+  "z": "expatternalertonbreach-tab",
+  "x": 840,
+  "y": 120,
+  "wires": [],
+  "name": "alerts"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-f"
+ }
+]

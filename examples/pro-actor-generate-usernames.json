@@ -1,0 +1,74 @@
+[
+ {
+  "id": "exagenerateusernames-tab",
+  "type": "tab",
+  "label": "pro-actor: generate-usernames",
+  "disabled": false,
+  "info": "Dispatch a target to the generate-usernames pro-actor (enricher; operations: generate). Inspect the catalog first, then dispatch; swap the inject payload for your target (username, url, domain...)."
+ },
+ {
+  "id": "exagenerateusernames-1",
+  "type": "inject",
+  "z": "exagenerateusernames-tab",
+  "x": 180,
+  "y": 100,
+  "wires": [
+   [
+    "exagenerateusernames-2"
+   ]
+  ],
+  "name": "target for generate-usernames",
+  "props": [
+   {
+    "p": "payload"
+   }
+  ],
+  "repeat": "",
+  "crontab": "",
+  "once": false,
+  "topic": "",
+  "payload": "alice",
+  "payloadType": "str"
+ },
+ {
+  "id": "exagenerateusernames-2",
+  "type": "starintel-target",
+  "z": "exagenerateusernames-tab",
+  "x": 400,
+  "y": 100,
+  "wires": [
+   [
+    "exagenerateusernames-3"
+   ]
+  ],
+  "name": "dispatch generate-usernames",
+  "server": "cfg-srv-x",
+  "op": "dispatch",
+  "actor": "generate-usernames",
+  "target": "",
+  "options": "{}",
+  "delay": 0,
+  "recurring": false
+ },
+ {
+  "id": "exagenerateusernames-3",
+  "type": "debug",
+  "z": "exagenerateusernames-tab",
+  "x": 620,
+  "y": 100,
+  "wires": [],
+  "name": "dispatch result",
+  "active": true,
+  "tosidebar": true,
+  "console": false,
+  "complete": "payload",
+  "targetType": "msg"
+ },
+ {
+  "type": "starintel-server",
+  "name": "LAN starintel-server",
+  "baseUrl": "http://127.0.0.1:5000",
+  "timeoutMs": 8000,
+  "id": "cfg-srv-x"
+ }
+]
