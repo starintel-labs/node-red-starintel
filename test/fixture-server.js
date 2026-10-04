@@ -53,6 +53,11 @@ function startFixtureServer() {
         }));
         return;
       }
+      if (path === '/api/v1/documents/op1' && req.method === 'GET') {
+        res.end(JSON.stringify({ id: 'op1', dataset: 'node-red', dtype: 'document', schemaVersion: '0.10.1',
+          extensions: { nodeRed: { operation: { mission: 'fixture', status: 'planned', phases: [] } } } }));
+        return;
+      }
       const docMatch = path.match(/^\/api\/v1\/documents\/([^/]+)$/);
       if (docMatch) {
         res.writeHead(200);

@@ -35,10 +35,11 @@ POST   /new/target/:actor         targets:dispatch (legacy)
 GET    /targets/:actor            targets:read (legacy)
 ```
 
-Manifest documents keep strict v0.9 `data` fields (`actor`, `consumer_path`,
-`target_options`, `manifest_type`, `name`, `generated_at`, `schema_versions`);
-richer runtime contracts belong to `extensions.starintel.actor_manifest.v1`
-(tracked as a follow-up).
+New document writes use flat lowerCamelCase StarIntel 0.10.1 objects. Manifest
+runtime metadata lives in `metadata`; consumer paths and target options use
+`consumerPaths` and `targetOptions`. Operations and alerts have no matching core
+dtype and are explicitly stored as `document.extensions.nodeRed.operation` or
+`document.extensions.nodeRed.alert`. Legacy operation updates fail closed.
 
 ## Security notes
 
@@ -51,12 +52,20 @@ richer runtime contracts belong to `extensions.starintel.actor_manifest.v1`
 
 ## Schema provenance
 
-StarIntel document consumers pin
-[`schema/starintel-schema.lock.json`](https://github.com/lost-rob0t/starintel-gpt-auto-dig)
-in their repositories. At the time of this palette's design the locked
-release was 0.9.1 (base schema family 0.9.0). Manifest emission uses strict
-v0.9 fields; full schema conformance against the locked release is a
-follow-up issue.
+The immutable StarLang release at `765f1673851192bcaf1cdd2f35c47608f979b079`
+is pinned in `schema/starintel-schema.lock.json`. Vendored generated artifacts
+come exclusively from `specs/starintel/0.10.1`; check them offline with:
+
+```sh
+python3 scripts/sync-starintel-consumer.py --offline
+```
+
+All emit/document write boundaries validate the concrete dtype against that
+schema. Historical 0.9 envelopes remain readable, but must be migrated by the
+upstream migration tooling before writing. This palette never silently flattens
+or relabels historical records. Raw emit input must contain canonical fields;
+unknown payloads can be preserved explicitly in the `extensions` object of a
+`document`. No stored database is rewritten.
 
 ## Install
 

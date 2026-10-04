@@ -3,24 +3,13 @@ module.exports = function (RED) {
 
   const http = require('../lib/starintel-http');
 
-  // actor-manifest v0.9 strict data fields per
-  // starintel-pro-actors/docs/actor-manifests.org:
-  // actor, consumer_path, target_options, manifest_type, name,
-  // generated_at, schema_versions. Richer contracts belong in
-  // extensions.starintel.actor_manifest.v1 (follow-up issue).
+  const docs = require('../lib/starintel-docs');
   function manifestDocument(config, msg) {
-    const now = new Date().toISOString();
-    const targetOptions = resolveList(config.targetOptions, msg.target_options);
-    const data = {
-      actor: config.actor || msg.actor || 'starintel-node',
-      name: config.actorName || config.actor || msg.actor || 'starintel-node',
-      manifest_type: config.manifestType || 'node',
-      generated_at: now,
-      schema_versions: ['0.9.0']
-    };
-    if (config.consumerPath) data.consumer_path = config.consumerPath;
-    if (targetOptions.length) data.target_options = targetOptions;
-    return { dtype: 'actor-manifest', data };
+    const actor = config.actor || msg.actor || 'starintel-node';
+    return docs.actorManifestDocument({ actor_id: actor, consumer_path: config.consumerPath }, {
+      name: config.actorName || actor, manifest_type: config.manifestType || 'node',
+      target_options: resolveList(config.targetOptions, msg.target_options)
+    });
   }
 
   function resolveList(cfgText, msgValue) {

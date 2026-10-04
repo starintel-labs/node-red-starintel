@@ -84,9 +84,9 @@ test('starintel-rlm publishes an agentic actor-manifest when enabled', async () 
     const manifestReq = fixture.requests.find((r) => r.method === 'POST' && r.url === '/api/v1/documents');
     assert.ok(manifestReq, 'manifest was not ingested');
     assert.strictEqual(manifestReq.body.dtype, 'actor-manifest');
-    assert.strictEqual(manifestReq.body.data.actor, 'probe-agent');
-    assert.strictEqual(manifestReq.body.data.manifest_type, 'agentic');
-    assert.deepStrictEqual(manifestReq.body.data.target_options, ['deep']);
+    assert.strictEqual(manifestReq.body.actor, 'probe-agent');
+    assert.strictEqual(manifestReq.body.metadata.manifestType, 'agentic');
+    assert.deepStrictEqual(manifestReq.body.targetOptions.names, ['deep']);
   });
 });
 

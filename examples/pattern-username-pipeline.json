@@ -20,7 +20,7 @@
   "name": "usernames",
   "server": "cfg-f",
   "mode": "search",
-  "q": "dtype:username",
+  "q": "dtype:user",
   "limit": 25,
   "params": "",
   "documentId": "",
@@ -38,7 +38,7 @@
    ]
   ],
   "name": "emit observations",
-  "dtype": "observation",
+  "dtype": "document",
   "bulk": false
  },
  {

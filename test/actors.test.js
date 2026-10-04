@@ -57,7 +57,7 @@ test('actors targets lists targets for an actor', async () => {
   });
 });
 
-test('actors publish ingests a strict actor-manifest v0.9 document', async () => {
+test('actors publish ingests a strict actor-manifest 0.10.1 document', async () => {
   await withServer(async (fixture) => {
     const RED = loadModules('nodes/starintel-server.js', 'nodes/starintel-actors.js');
     const node = makeNode(RED, {
@@ -75,15 +75,14 @@ test('actors publish ingests a strict actor-manifest v0.9 document', async () =>
     assert.strictEqual(req.url, '/api/v1/documents');
     const doc = req.body;
     assert.strictEqual(doc.dtype, 'actor-manifest');
-    assert.strictEqual(doc.data.actor, 'starintel-rlm-probe');
-    assert.strictEqual(doc.data.manifest_type, 'agentic');
-    assert.strictEqual(doc.data.consumer_path, '/agents/probe');
-    assert.deepStrictEqual(doc.data.target_options, ['deep', 'json']);
-    assert.ok(Array.isArray(doc.data.schema_versions));
-    assert.ok(doc.data.generated_at);
-    // Strict-field contract: nothing beyond the v0.9 accepted set.
-    const allowed = new Set(['actor', 'consumer_path', 'target_options', 'manifest_type', 'name', 'generated_at', 'schema_versions']);
-    for (const key of Object.keys(doc.data)) assert.ok(allowed.has(key), 'unexpected data field ' + key);
+    assert.strictEqual(doc.actor, 'starintel-rlm-probe');
+    assert.strictEqual(doc.metadata.manifestType, 'agentic');
+    assert.strictEqual(doc.consumerPaths[0], '/agents/probe');
+    assert.deepStrictEqual(doc.targetOptions.names, ['deep', 'json']);
+    assert.ok(Array.isArray(doc.metadata.schemaVersions));
+    assert.ok(doc.createdAt);
+    require('../lib/starintel-contract').validate(doc);
+    assert.strictEqual(doc.data, undefined);
   });
 });
 

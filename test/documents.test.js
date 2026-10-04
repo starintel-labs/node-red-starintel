@@ -23,13 +23,13 @@ test('documents ingest posts msg.payload to /api/v1/documents', async () => {
   await withServer(async (fixture) => {
     const RED = loadModules('nodes/starintel-server.js', 'nodes/starintel-documents.js');
     const node = makeNode(RED, 'starintel-documents', { op: 'ingest' }, { baseUrl: fixture.baseUrl });
-    const result = await driveInput(node, { payload: { dtype: 'username', data: { username: 'x' } } });
+    const result = await driveInput(node, { payload: { id: 'doc1', dataset: 'test', dtype: 'document', schemaVersion: '0.10.1', notes: 'x' } });
     assert.strictEqual(result.err, undefined);
     assert.strictEqual(result.sent[0].payload.ok, true);
     const req = fixture.requests[0];
     assert.strictEqual(req.method, 'POST');
     assert.strictEqual(req.url, '/api/v1/documents');
-    assert.deepStrictEqual(req.body, { dtype: 'username', data: { username: 'x' } });
+    assert.deepStrictEqual(req.body, { id: 'doc1', dataset: 'test', dtype: 'document', schemaVersion: '0.10.1', notes: 'x' });
   });
 });
 
@@ -37,7 +37,7 @@ test('documents bulk posts arrays to /api/v1/documents/bulk', async () => {
   await withServer(async (fixture) => {
     const RED = loadModules('nodes/starintel-server.js', 'nodes/starintel-documents.js');
     const node = makeNode(RED, 'starintel-documents', { op: 'bulk' }, { baseUrl: fixture.baseUrl });
-    const result = await driveInput(node, { payload: [{ a: 1 }, { a: 2 }] });
+    const result = await driveInput(node, { payload: [{ id: 'a', dataset: 'test', dtype: 'document', schemaVersion: '0.10.1' }, { id: 'b', dataset: 'test', dtype: 'document', schemaVersion: '0.10.1' }] });
     assert.strictEqual(result.err, undefined);
     assert.strictEqual(result.sent[0].payload.count, 2);
     assert.strictEqual(fixture.requests[0].url, '/api/v1/documents/bulk');

@@ -61,7 +61,7 @@
    ]
   ],
   "name": "bump",
-  "func": "msg.payload.data.touched = 1; return msg;",
+  "func": "msg.payload.extensions = msg.payload.extensions || {}; msg.payload.extensions.touched = 1; return msg;",
   "outputs": 1,
   "noerr": 0,
   "initialize": "",

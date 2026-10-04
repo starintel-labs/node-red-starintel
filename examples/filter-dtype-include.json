@@ -20,7 +20,7 @@
   "name": "dataset: posts",
   "server": "cfg-f",
   "mode": "search",
-  "q": "dtype:post",
+  "q": "dtype:socialmpost",
   "limit": 100,
   "params": "",
   "documentId": "",

@@ -44,5 +44,5 @@
 </script>
 
 <script type="text/html" data-help-name="starintel-emit">
-<p>Canonical emit: completes the v0.9 envelope client-side (dtype/data/schema_version/version/dates/sources/evidence) and ingests via /api/v1/documents or /bulk (arrays or forced bulk). Full documents pass through untouched.</p>
+<p>Canonical emit: completes and validates a flat StarIntel 0.10.1 document (id/dataset/dtype/schemaVersion) and ingests via /api/v1/documents or /bulk (arrays or forced bulk). Full canonical documents are validated before sending. Legacy envelopes require explicit upstream migration.</p>
 </script>

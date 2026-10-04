@@ -7,7 +7,7 @@ module.exports = function (RED) {
   // timestamps in Org format vs raw, body quoting level, tag derivation.
   function toOrgTimestamp(iso) {
     if (!iso) return '';
-    const d = new Date(iso);
+    const d = new Date(typeof iso === 'number' ? iso * 1000 : iso);
     if (isNaN(d.getTime())) return iso;
     const pad = (n) => String(n).padStart(2, '0');
     return '[' + d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
@@ -16,7 +16,7 @@ module.exports = function (RED) {
   }
 
   function pick(doc, names) {
-    const data = (doc && doc.data) || {};
+    const data = (doc && doc.data) || doc || {};
     for (const n of names) {
       if (data[n] !== undefined && data[n] !== null && data[n] !== '') return data[n];
     }
@@ -24,12 +24,12 @@ module.exports = function (RED) {
   }
 
   function renderMessage(doc, opts) {
-    const data = (doc && doc.data) || {};
+    const data = (doc && doc.data) || doc || {};
     const lines = [];
     const level = '*'.repeat(Math.max(1, Number(opts.headingLevel) || 1));
     const who = pick(doc, ['from', 'author', 'username', 'sender', 'actor']) || 'unknown';
     const channel = pick(doc, ['channel', 'platform', 'community', 'server']) || '';
-    const when = pick(doc, ['date', 'posted_at', 'sent_at', 'created_at']) || doc.date_added;
+    const when = pick(doc, ['postedAt', 'sentAt', 'createdAt', 'date', 'posted_at', 'sent_at', 'created_at']) || doc.date_added;
     const title = String(who) + (channel ? ' @ ' + channel : '') + (opts.timestamps === 'org' && when ? ' (' + toOrgTimestamp(when) + ')' : '');
 
     let tagLine = '';
@@ -47,7 +47,7 @@ module.exports = function (RED) {
       lines.push(':PROPERTIES:');
       lines.push(':ID: ' + (doc.id || doc._id || ''));
       lines.push(':DTYPE: ' + (doc.dtype || ''));
-      if (doc.schema_version) lines.push(':SCHEMA_VERSION: ' + doc.schema_version);
+      if (doc.schemaVersion || doc.schema_version) lines.push(':SCHEMA_VERSION: ' + (doc.schemaVersion || doc.schema_version));
       if (opts.timestamps === 'raw' && when) lines.push(':DATE: ' + when);
       lines.push(':END:');
     }

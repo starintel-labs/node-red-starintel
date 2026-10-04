@@ -20,7 +20,7 @@
   "q": "dtype:host",
   "limit": 50,
   "view": "table",
-  "columns": "data.ip,data.hostname",
+  "columns": "ip,hostname",
   "refreshSec": 60
  },
  {

@@ -4,7 +4,7 @@
   "type": "tab",
   "label": "Operations: create an operation",
   "disabled": false,
-  "info": "StarIntel operation lifecycle (dtype operation). Needs starintel-server."
+  "info": "StarIntel operation lifecycle (document.extensions.nodeRed.operation). Needs starintel-server."
  },
  {
   "id": "ex-operationcreate-1",

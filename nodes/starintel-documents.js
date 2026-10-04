@@ -24,7 +24,7 @@ module.exports = function (RED) {
         e.code = 'STAR_CONFIG';
         return done(e);
       }
-      run(node, config, msg).then((result) => {
+      Promise.resolve().then(() => run(node, config, msg)).then((result) => {
         msg.payload = result;
         node.status({ fill: 'green', shape: 'dot', text: op });
         send(msg);
@@ -40,12 +40,13 @@ module.exports = function (RED) {
     return config.documentId || msg.id || msg.topic || '';
   }
 
+  const validate = require('../lib/starintel-contract').validate;
   const handlers = {
     ingest(node, config, msg) {
-      return http.request(node.server, 'POST', '/api/v1/documents', { body: msg.payload });
+      return http.request(node.server, 'POST', '/api/v1/documents', { body: validate(msg.payload) });
     },
     bulk(node, config, msg) {
-      return http.request(node.server, 'POST', '/api/v1/documents/bulk', { body: msg.payload });
+      return http.request(node.server, 'POST', '/api/v1/documents/bulk', { body: msg.payload.map(validate) });
     },
     get(node, config, msg) {
       const id = documentId(config, msg);
@@ -55,7 +56,7 @@ module.exports = function (RED) {
     update(node, config, msg) {
       const id = documentId(config, msg);
       if (!id) return Promise.reject(missingId());
-      return http.request(node.server, 'PUT', '/api/v1/documents/' + encodeURIComponent(id), { body: msg.payload });
+      return http.request(node.server, 'PUT', '/api/v1/documents/' + encodeURIComponent(id), { body: validate(msg.payload) });
     },
     delete(node, config, msg) {
       const id = documentId(config, msg);

@@ -20,7 +20,7 @@
   "name": "dataset: posts",
   "server": "cfg-f",
   "mode": "search",
-  "q": "dtype:post",
+  "q": "dtype:socialmpost",
   "limit": 100,
   "params": "",
   "documentId": "",
@@ -38,7 +38,7 @@
    ]
   ],
   "name": "filter",
-  "rules": "[{\"field\":\"data.email\",\"op\":\"regex\",\"value\":\"@starintel\\\\.actor$\"}]",
+  "rules": "[{\"field\":\"address\",\"op\":\"regex\",\"value\":\"@starintel\\\\.actor$\"}]",
   "includeDtypes": "",
   "excludeDtypes": "",
   "limit": 25,
