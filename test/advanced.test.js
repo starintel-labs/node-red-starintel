@@ -19,7 +19,7 @@ function wire(RED, typeName, config, fixture, serverCfg) {
   return instantiate(RED, typeName, Object.assign({ server: 'srv' }, config));
 }
 
-test('starintel-target builds a canonical v0.9 target document', async () => {
+test('starintel-target builds a canonical 0.10.1 target document', async () => {
   const RED = loadModules('nodes/starintel-server.js', 'nodes/starintel-target.js');
   RED._nodesById.srv = { id: 'srv', baseUrl: 'http://unused.example', timeoutMs: 8000 };
   const node = instantiate(RED, 'starintel-target', {
@@ -30,13 +30,14 @@ test('starintel-target builds a canonical v0.9 target document', async () => {
   assert.strictEqual(result.err, undefined);
   const doc = result.sent[0].payload;
   assert.strictEqual(doc.dtype, 'target');
-  assert.strictEqual(doc.data.actor, 'bluesky');
-  assert.strictEqual(doc.data.target, 'alice');
-  assert.strictEqual(doc.data.delay, 5);
-  assert.strictEqual(doc.data.recurring, true);
-  assert.deepStrictEqual(doc.data.options, { deep: true });
-  assert.strictEqual(doc.schema_version, '0.9.0');
-  assert.ok(Array.isArray(doc.sources) && Array.isArray(doc.evidence));
+  assert.strictEqual(doc.actor, 'bluesky');
+  assert.strictEqual(doc.target, 'alice');
+  assert.strictEqual(doc.delay, 5);
+  assert.strictEqual(doc.recurring, true);
+  assert.deepStrictEqual(doc.options, { deep: true });
+  assert.strictEqual(doc.schemaVersion, '0.10.1');
+  assert.ok(doc.id && doc.dataset);
+  assert.strictEqual(doc.data, undefined);
 });
 
 test('starintel-target dispatches through /new/target/:actor', async () => {
@@ -49,8 +50,8 @@ test('starintel-target dispatches through /new/target/:actor', async () => {
     assert.strictEqual(req.method, 'POST');
     assert.strictEqual(req.url, '/new/target/reddit');
     assert.strictEqual(req.body.dtype, 'target');
-    assert.strictEqual(req.body.data.actor, 'reddit');
-    assert.strictEqual(req.body.data.target, 'bob');
+    assert.strictEqual(req.body.actor, 'reddit');
+    assert.strictEqual(req.body.target, 'bob');
   });
 });
 
@@ -76,8 +77,8 @@ test('starintel-pro-actors emits options and manifest for one actor', async () =
   const mnode = instantiate(RED2, 'starintel-pro-actors', { op: 'manifest', actor: 'x', emit: false });
   const m = await driveInput(mnode, {});
   assert.strictEqual(m.sent[0].payload.dtype, 'actor-manifest');
-  assert.strictEqual(m.sent[0].payload.data.actor, 'x');
-  assert.deepStrictEqual(m.sent[0].payload.data.schema_versions, ['0.9.0']);
+  assert.strictEqual(m.sent[0].payload.actor, 'x');
+  assert.deepStrictEqual(m.sent[0].payload.metadata.schemaVersions, ['0.10.1']);
 });
 
 test('starintel-pro-actors rejects unknown actors', async () => {
@@ -139,10 +140,10 @@ test('starintel-operations creates a strict operation document', async () => {
     assert.strictEqual(result.err, undefined);
     const req = fixture.requests[0];
     assert.strictEqual(req.url, '/api/v1/documents');
-    assert.strictEqual(req.body.dtype, 'operation');
-    assert.strictEqual(req.body.data.mission, 'map the org');
-    assert.strictEqual(req.body.data.status, 'planned');
-    assert.deepStrictEqual(req.body.data.phases, [{ name: 'recon' }]);
+    assert.strictEqual(req.body.dtype, 'document');
+    assert.strictEqual(req.body.extensions.nodeRed.operation.mission, 'map the org');
+    assert.strictEqual(req.body.extensions.nodeRed.operation.status, 'planned');
+    assert.deepStrictEqual(req.body.extensions.nodeRed.operation.phases, [{ name: 'recon' }]);
   });
 });
 
@@ -154,8 +155,8 @@ test('starintel-operations set-status appends status history', async () => {
     assert.strictEqual(result.err, undefined);
     const put = fixture.requests.find((r) => r.method === 'PUT');
     assert.ok(put, 'no PUT issued');
-    assert.strictEqual(put.body.data.status, 'active');
-    assert.ok(Array.isArray(put.body.data.status_history));
+    assert.strictEqual(put.body.extensions.nodeRed.operation.status, 'active');
+    assert.ok(Array.isArray(put.body.extensions.nodeRed.operation.statusHistory));
   });
 });
 
@@ -174,16 +175,16 @@ test('starintel-input search splits documents', async () => {
 test('starintel-emit wraps raw data and bulk-flows arrays', async () => {
   await withServer(async (fixture) => {
     const RED = loadModules('nodes/starintel-server.js', 'nodes/starintel-emit.js');
-    const node = wire(RED, 'starintel-emit', { dtype: 'observation' }, fixture, { baseUrl: fixture.baseUrl });
-    const result = await driveInput(node, { payload: { note: 'saw a thing' } });
+    const node = wire(RED, 'starintel-emit', { dtype: 'document' }, fixture, { baseUrl: fixture.baseUrl });
+    const result = await driveInput(node, { payload: { notes: 'saw a thing' } });
     assert.strictEqual(result.err, undefined);
     assert.strictEqual(fixture.requests[0].url, '/api/v1/documents');
-    assert.strictEqual(fixture.requests[0].body.dtype, 'observation');
-    assert.strictEqual(fixture.requests[0].body.data.note, 'saw a thing');
+    assert.strictEqual(fixture.requests[0].body.dtype, 'document');
+    assert.strictEqual(fixture.requests[0].body.notes, 'saw a thing');
 
     const RED2 = loadModules('nodes/starintel-server.js', 'nodes/starintel-emit.js');
     const node2 = wire(RED2, 'starintel-emit', {}, fixture, { baseUrl: fixture.baseUrl });
-    const r2 = await driveInput(node2, { payload: [{ note: 'a' }, { note: 'b' }] });
+    const r2 = await driveInput(node2, { payload: [{ notes: 'a' }, { notes: 'b' }] });
     assert.strictEqual(r2.err, undefined);
     assert.strictEqual(fixture.requests[1].url, '/api/v1/documents/bulk');
     assert.strictEqual(fixture.requests[1].body.length, 2);

@@ -9,6 +9,14 @@ module.exports = function (RED) {
   // status is a free string with common presets offered in the editor.
   const STATUS_PRESETS = ['planned', 'active', 'paused', 'complete', 'abandoned'];
 
+  function operationFields(doc) {
+    if (doc.schemaVersion !== docs.DOC_VERSION || !doc.extensions ||
+        !doc.extensions.nodeRed || !doc.extensions.nodeRed.operation) {
+      throw new Error('operation updates require a canonical Node-RED operation document; legacy records are read-only');
+    }
+    return doc.extensions.nodeRed.operation;
+  }
+
   function StarintelOperationsNode(config) {
     RED.nodes.createNode(this, config);
     const node = this;
@@ -70,15 +78,15 @@ module.exports = function (RED) {
           return done(e);
         }
         http.request(node.server, 'GET', path).then((doc) => {
-          doc.data = doc.data || {};
-          const previous = doc.data.status;
-          doc.data.status = status;
-          doc.data.status_history = Array.isArray(doc.data.status_history) ? doc.data.status_history : [];
+          const operation = operationFields(doc);
+          const previous = operation.status;
+          operation.status = status;
+          operation.statusHistory = Array.isArray(operation.statusHistory) ? operation.statusHistory : [];
           if (previous && previous !== status) {
-            doc.data.status_history.push({ status: previous, at: docs.utcNow() });
+            operation.statusHistory.push({ status: previous, at: docs.utcNow() });
           }
-          doc.date_updated = docs.utcNow();
-          return http.request(node.server, 'PUT', path, { body: doc });
+          doc.updatedAt = docs.utcNow();
+          return http.request(node.server, 'PUT', path, { body: require('../lib/starintel-contract').validate(doc) });
         }).then((doc) => {
           msg.payload = doc; send(msg); done();
         }, done);
@@ -93,11 +101,11 @@ module.exports = function (RED) {
           return done(e);
         }
         http.request(node.server, 'GET', path).then((doc) => {
-          doc.data = doc.data || {};
-          doc.data.phases = Array.isArray(doc.data.phases) ? doc.data.phases : [];
-          doc.data.phases.push(phase || { name: 'unnamed' });
-          doc.date_updated = docs.utcNow();
-          return http.request(node.server, 'PUT', path, { body: doc });
+          const operation = operationFields(doc);
+          operation.phases = Array.isArray(operation.phases) ? operation.phases : [];
+          operation.phases.push(phase || { name: 'unnamed' });
+          doc.updatedAt = docs.utcNow();
+          return http.request(node.server, 'PUT', path, { body: require('../lib/starintel-contract').validate(doc) });
         }).then((doc) => {
           msg.payload = doc; send(msg); done();
         }, done);

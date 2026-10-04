@@ -38,7 +38,7 @@
    ]
   ],
   "name": "only starintel.actor domains",
-  "rules": "[{\"field\":\"data.domain\",\"op\":\"regex\",\"value\":\"starintel\"}]",
+  "rules": "[{\"field\":\"domain\",\"op\":\"regex\",\"value\":\"starintel\"}]",
   "includeDtypes": "",
   "excludeDtypes": "",
   "limit": 0,
@@ -56,7 +56,7 @@
    ]
   ],
   "name": "emit alerts",
-  "dtype": "alert",
+  "dtype": "document",
   "bulk": true
  },
  {

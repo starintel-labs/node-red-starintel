@@ -86,19 +86,19 @@ for actor, spec in sorted(CATALOG.items()):
 
 # ---- filter examples ----
 FILTER_CASES = [
-    ("filter-by-actor", "Filter: by actor", '[{"field":"data.actor","op":"eq","value":"bluesky"}]', ""),
+    ("filter-by-actor", "Filter: by actor", '[{"field":"actor","op":"eq","value":"bluesky"}]', ""),
     ("filter-dtype-include", "Filter: dtype include list", "", "post,account"),
-    ("filter-regex-email", "Filter: regex on email", '[{"field":"data.email","op":"regex","value":"@starintel\\\\.actor$"}]', ""),
+    ("filter-regex-email", "Filter: regex on email", '[{"field":"address","op":"regex","value":"@starintel\\\\.actor$"}]', ""),
     ("filter-dedupe-sort", "Filter: dedupe + sort", "", ""),
-    ("filter-exists-paging", "Filter: exists + limit", '[{"field":"data.age","op":"exists"}]', ""),
+    ("filter-exists-paging", "Filter: exists + limit", '[{"field":"extensions.age","op":"exists"}]', ""),
 ]
 for name, title, rules, include in FILTER_CASES:
     prefix = "ex" + name.replace("-", "")
     tab_id = prefix + "-tab"
-    dd = {"dedupeField": "data.canonical_key", "sortField": "data.date_added", "sortDir": "desc"} if "dedupe" in name else {}
+    dd = {"dedupeField": "id", "sortField": "createdAt", "sortDir": "desc"} if "dedupe" in name else {}
     simple(name, title,
            "Advanced filtering over starintel-input results. Needs starintel-server.",
-           [("starintel-input", "dataset: posts", {"server": "cfg-f", "mode": "search", "q": "dtype:post", "limit": 100, "params": "", "documentId": "", "split": False}),
+           [("starintel-input", "dataset: posts", {"server": "cfg-f", "mode": "search", "q": "dtype:socialmpost", "limit": 100, "params": "", "documentId": "", "split": False}),
             ("starintel-filter", "filter", {"rules": rules, "includeDtypes": include, "excludeDtypes": "", **dd, "limit": 25, "offset": 0}),
             ("debug", "filtered", {})],
            extra_config=[dict(SERVER_CFG, id="cfg-f")])
@@ -115,7 +115,7 @@ OPS_CASES = [
 for name, title, mid in OPS_CASES:
     prefix = "ex" + name.replace("-", "")
     tab_id = prefix + "-tab"
-    simple(name, title, "StarIntel operation lifecycle (dtype operation). Needs starintel-server.",
+    simple(name, title, "StarIntel operation lifecycle (document.extensions.nodeRed.operation). Needs starintel-server.",
            [("inject", "go", {"props": [], "repeat": "", "crontab": "", "once": False, "topic": "", "payload": "", "payloadType": "date"}),
             mid,
             ("debug", "result", {})],
@@ -124,13 +124,13 @@ for name, title, mid in OPS_CASES:
 # ---- canonical input/emit patterns ----
 PATTERN_CASES = [
     ("pattern-username-pipeline", "Pattern: hunt -> enrich -> emit",
-     [("starintel-input", "usernames", {"server": "cfg-f", "mode": "search", "q": "dtype:username", "limit": 25, "params": "", "documentId": "", "split": True}),
-      ("starintel-emit", "emit observations", {"dtype": "observation", "bulk": False}),
+     [("starintel-input", "usernames", {"server": "cfg-f", "mode": "search", "q": "dtype:user", "limit": 25, "params": "", "documentId": "", "split": True}),
+      ("starintel-emit", "emit observations", {"dtype": "document", "bulk": False}),
       ("debug", "emitted", {})]),
     ("pattern-alert-on-breach", "Pattern: breach watch -> alert emit",
      [("starintel-input", "breaches", {"server": "cfg-f", "mode": "search", "q": "dtype:breach", "limit": 10, "params": "", "documentId": "", "split": False}),
-      ("starintel-filter", "only starintel.actor domains", {"rules": '[{"field":"data.domain","op":"regex","value":"starintel"}]', "includeDtypes": "", "excludeDtypes": "", "limit": 0, "offset": 0}),
-      ("starintel-emit", "emit alerts", {"dtype": "alert", "bulk": True}),
+      ("starintel-filter", "only starintel.actor domains", {"rules": '[{"field":"domain","op":"regex","value":"starintel"}]', "includeDtypes": "", "excludeDtypes": "", "limit": 0, "offset": 0}),
+      ("starintel-emit", "emit alerts", {"dtype": "document", "bulk": True}),
       ("debug", "alerts", {})]),
     ("pattern-manifest-board", "Pattern: manifest board UI",
      [("starintel-ui", "manifest board", {"server": "cfg-f", "path": "manifests", "title": "Actor manifests", "q": "dtype:actor-manifest", "limit": 50, "view": "cards", "columns": "", "refreshSec": 30})]),

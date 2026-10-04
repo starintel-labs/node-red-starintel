@@ -88,16 +88,11 @@ module.exports = function (RED) {
   }
 
   function manifestDocument(node, config, msg) {
-    const data = {
-      actor: config.actorName || 'starintel-rlm',
-      name: config.actorName || 'starintel-rlm',
-      manifest_type: 'agentic',
-      generated_at: new Date().toISOString(),
-      schema_versions: ['0.9.0']
-    };
-    const opts = String(config.targetOptions || '').split(',').map((s) => s.trim()).filter(Boolean);
-    if (opts.length) data.target_options = opts;
-    return { dtype: 'actor-manifest', data };
+    return require('../lib/starintel-docs').actorManifestDocument({
+      actor_id: config.actorName || 'starintel-rlm'
+    }, { manifest_type: 'agentic',
+      target_options: String(config.targetOptions || '').split(',').map((s) => s.trim()).filter(Boolean)
+    });
   }
 
   function StarintelRlmNode(config) {

@@ -24,12 +24,15 @@ module.exports = function (RED) {
       }
       const raw = msg.payload;
       const items = Array.isArray(raw) ? raw : [raw];
-      const built = items.map((item) => {
-        if (item && typeof item === 'object' && item.dtype && item.data) {
-          return item;
-        }
-        return docs.baseDocument(config.dtype || 'observation', item);
-      });
+      let built;
+      try {
+        built = items.map((item) => {
+          if (item && typeof item === 'object' && (item.schemaVersion || item.schema_version || item.data)) {
+            return require('../lib/starintel-contract').validate(item);
+          }
+          return docs.baseDocument(config.dtype || 'document', item);
+        });
+      } catch (err) { return done(err); }
 
       const useBulk = config.bulk || items.length > 1;
       node.status({ fill: 'blue', shape: 'dot', text: 'emit ' + built.length });
